@@ -1,0 +1,86 @@
+<ProjectPlan>
+    <Credentials>
+        <SupabaseURL>https://ukacurhcozkuajjxccby.supabase.co</SupabaseURL>
+        <ServiceRoleKey>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVrYWN1cmhjb3prdWFqanhjY2J5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzMxMDYzOCwiZXhwIjoyMDg4ODg2NjM4fQ.s1EtkK57OKK3kkfsb5y1ZLHu6rkayb7WfH2HkiG-qBE</ServiceRoleKey>
+    </Credentials>
+
+    <ScrapingTargets>
+        <Primary>https://samehadaku.li/</Primary>
+        <Secondary>https://anoboy7.com/</Secondary>
+    </ScrapingTargets>
+
+    <DatabaseSetup>
+        <Instruction>Execute this SQL in Supabase SQL Editor to build the infrastructure.</Instruction>
+        <SQLCode>
+-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- 1. Table: animes (Master Data)
+CREATE TABLE animes (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    description TEXT,
+    cover_url TEXT,
+    status TEXT DEFAULT 'Ongoing',
+    rating TEXT,
+    source_origin TEXT, -- 'samehadaku' or 'anoboy'
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- 2. Table: episodes
+CREATE TABLE episodes (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    anime_id UUID REFERENCES animes(id) ON DELETE CASCADE,
+    episode_no INT NOT NULL,
+    title TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
+-- 3. Table: video_sources (Streaming Links)
+CREATE TABLE video_sources (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    episode_id UUID REFERENCES episodes(id) ON DELETE CASCADE,
+    provider_name TEXT NOT NULL,
+    video_url TEXT NOT NULL,
+    quality TEXT DEFAULT '720p',
+    is_embed BOOLEAN DEFAULT true
+);
+
+-- Disable RLS bypass for Service Role (Internal)
+ALTER TABLE animes ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Enable Read for All" ON animes FOR SELECT USING (true);
+        </SQLCode>
+    </DatabaseSetup>
+
+    <DesignPhilosophy>
+        <Concept>Modern Industrial / Swiss Minimalist</Concept>
+        <StrictRules>
+            <Color>Background: #000000, Surface: #111111, Text: #FFFFFF, Accent: #FF0000 (Pure Red).</Color>
+            <NoGradients>Absolutely NO purple, pink, or neon gradients. No "gaming" vibes.</NoGradients>
+            <Layout>Sharp corners (0px-4px radius), 1px solid borders (#333), bold sans-serif typography (Inter/Geist).</Layout>
+        </StrictRules>
+    </DesignPhilosophy>
+
+    <TechnicalLogic>
+        <PythonScraper>
+            <Task>
+                1. Scrape metadata from Samehadaku/Anoboy (Title, Image, Slug).
+                2. Extract Episode List and Direct/Embed Video Links.
+                3. Implement 'Upsert' logic: if anime exists, update episodes/sources only.
+                4. Use 'service_role' key for direct DB insertion via supabase-py.
+            </Task>
+        </PythonScraper>
+        <NextJSFrontend>
+            <Task>
+                1. Build Home Grid with High-Contrast Anime Cards.
+                2. Build Watch Page with Server Switcher (Tab System for Video Sources).
+                3. Fully Responsive Mobile-First Design.
+            </Task>
+        </NextJSFrontend>
+    </TechnicalLogic>
+
+    <FinalInstruction>
+        "Antigravity, implement this project as a 100% finished product. No placeholders. No bugs. The design must be sharp, professional, and minimalist. Use the provided Supabase credentials to ensure the backend is fully connected. Deliver the Python Scraper script and the full Next.js project structure."
+    </FinalInstruction>
+</ProjectPlan>
