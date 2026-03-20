@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 
 const LINKS = [
     { href: "/", label: "Home" },
+    { href: "/terbaru", label: "Terbaru" },
     { href: "/popular", label: "Popular" },
     { href: "/movie", label: "Movie" },
     { href: "/genres", label: "Genre" },
@@ -87,7 +88,7 @@ export default function NavClient() {
                         <span style={{ background: "var(--accent)", color: "#fff", fontWeight: 900, fontSize: "1rem", padding: "1px 7px", borderRadius: "4px" }}>nime</span>
                     </div>
 
-                    <form onSubmit={handleSearch} style={{ display: "flex", gap: "8px", marginBottom: "0.5rem" }}>
+                    <form onSubmit={handleSearch} style={{ display: "flex", gap: "8px", marginBottom: "0.5rem", width: "100%" }}>
                         <input
                             type="text"
                             placeholder="Cari anime..."
@@ -95,6 +96,7 @@ export default function NavClient() {
                             onChange={(e) => setSearchQuery(e.target.value)}
                             style={{
                                 flex: 1,
+                                minWidth: 0,
                                 padding: "10px 14px",
                                 borderRadius: "8px",
                                 border: "1px solid var(--border)",
@@ -105,14 +107,16 @@ export default function NavClient() {
                             }}
                         />
                         <button type="submit" style={{
-                            padding: "0 14px",
+                            width: "46px",
+                            height: "46px",
+                            flexShrink: 0,
                             background: "var(--accent)",
                             color: "#fff",
                             borderRadius: "8px",
                             fontWeight: 600,
                             display: "flex", alignItems: "center", justifyContent: "center"
                         }}>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                         </button>
                     </form>
 

@@ -100,6 +100,13 @@ img {
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.7), 0 0 30px var(--accent-glow);
 }
 
+.anime-card:active,
+.hero-card:active {
+  transform: scale(0.96) !important;
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: brightness(0.9);
+}
+
 /* ── Section label ──────────────────────────── */
 .section-label {
   display: flex;
@@ -171,4 +178,76 @@ img {
   to {
     transform: translateX(0);
   }
+}
+
+/* ── Pagination ─────────────────────────────── */
+.pagination-btn {
+  padding: 8px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover {
+  background: var(--surface);
+  border-color: var(--border-hover);
+  color: var(--accent);
+}
+
+.pagination-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.pagination-btn:active {
+  transform: scale(0.92) !important;
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+a:active,
+button:active {
+  transform: scale(0.98);
+  transition: transform 0.1s;
+}
+
+/* ── Episode Card ─────────────────────────── */
+.episode-card-inner {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 4px;
+  padding: 0.75rem;
+  text-align: center;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  cursor: pointer;
+}
+
+.episode-card-inner:hover {
+  border-color: var(--accent) !important;
+  background: #1a0000 !important;
+}
+
+/* Mobile Feedback */
+.episode-card-inner:active {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  transform: scale(0.92);
+}
+
+.episode-card-inner:active p {
+  color: #fff !important;
+}
+
+/* Global Click Feedback for Mobile */
+.btn-primary:active,
+button:active,
+a:active .anime-card,
+a:active .hero-card {
+  opacity: 0.8;
+  transform: scale(0.95);
 }

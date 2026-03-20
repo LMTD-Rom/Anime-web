@@ -243,12 +243,21 @@ def scrape_anime_detail(url, schedule_map, ongoing_slugs=None):
         if '/genres/' in href and text:
             genres.append(text)
     
-    # Status: default COMPLETED. Only Ongoing if slug is in the jadwal whitelist.
-    # Anoboy jadwal page doesn't expose status text, so we use the jadwal presence as signal.
+    # Status: try to read it from the page first, then fall back to jadwal whitelist.
+    status = "Completed"  # safe default
+    body_lower = soup.get_text(' ', strip=True).lower()
+    # Check for explicit status text on the page
+    if 'status' in body_lower:
+        # grab the part around 'status'
+        idx = body_lower.find('status')
+        snippet = body_lower[idx:idx+60]
+        if 'ongoing' in snippet:
+            status = "Ongoing"
+        elif 'completed' in snippet or 'finished' in snippet:
+            status = "Completed"
+    # Jadwal list overrides: if slug is actively in schedule, it's definitely Ongoing
     if ongoing_slugs and slug in ongoing_slugs:
         status = "Ongoing"
-    else:
-        status = "Completed"
 
     # Rating / Release Year — scan short metadata tags
     rating = None

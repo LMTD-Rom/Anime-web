@@ -48,10 +48,11 @@ export default async function HomePage() {
 
             {/* ═══ LEFT: UPDATE TERBARU ═══ */}
             <div style={{ flex: "1 1 auto" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>
-                <div className="section-label" style={{ marginBottom: 0 }}>
+              <div style={{ marginBottom: "1.25rem" }}>
+                <Link href="/terbaru" className="section-label" style={{ marginBottom: 0, display: "flex", justifyContent: "space-between", alignItems: "center", textDecoration: "none" }}>
                   <span>Update Terbaru</span>
-                </div>
+                  <span style={{ fontSize: "0.8rem", color: "var(--accent)", fontWeight: 600 }}>Lihat Semua →</span>
+                </Link>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4">
@@ -149,7 +150,7 @@ function HeroCard({ anime, primary }: { anime: any; primary: boolean }) {
               <span className="badge badge-accent">✦ TERBARU</span>
             )}
             <span className={`badge ${isOngoing ? "badge-ongoing" : "badge-completed"}`}>
-              {isOngoing ? "ON AIR" : "SELESAI"}
+              {isOngoing ? "ON GOING" : "DONE"}
             </span>
           </div>
         </div>

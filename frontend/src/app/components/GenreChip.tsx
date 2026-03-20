@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function GenreChip({ genre, count }: { genre: string; count: number }) {
     return (
-        <Link href={`/genre/${encodeURIComponent(genre.toLowerCase())}`} style={{ textDecoration: "none" }}>
+        <Link href={`/genre/${encodeURIComponent(genre)}`} style={{ textDecoration: "none" }}>
             <div
                 style={{
                     background: "#111",

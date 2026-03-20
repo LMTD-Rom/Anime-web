@@ -43,7 +43,7 @@ export default function AnimeCard({ anime }: { anime: any }) {
                     {/* Status badge */}
                     <div style={{ position: "absolute", top: 7, left: 7 }}>
                         <span className={`badge ${isOngoing ? "badge-ongoing" : "badge-completed"}`}>
-                            {isOngoing ? "ON AIR" : "DONE"}
+                            {isOngoing ? "ON GOING" : "DONE"}
                         </span>
                     </div>
 

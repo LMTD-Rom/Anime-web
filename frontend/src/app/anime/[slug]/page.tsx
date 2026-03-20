@@ -81,7 +81,7 @@ export default async function AnimePage({ params }: { params: Promise<{ slug: st
                     {anime.genres && anime.genres.length > 0 && (
                         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginBottom: "1rem" }}>
                             {anime.genres.map((g: string) => (
-                                <Link key={g} href={`/genre/${encodeURIComponent(g.toLowerCase())}`} style={{ textDecoration: "none" }}>
+                                <Link key={g} href={`/genre/${encodeURIComponent(g)}`} style={{ textDecoration: "none" }}>
                                     <span style={{ background: "#1a1a1a", border: "1px solid #2a2a2a", color: "#888", fontSize: "0.68rem", fontWeight: 600, padding: "3px 8px", cursor: "pointer" }}>
                                         {g}
                                     </span>
