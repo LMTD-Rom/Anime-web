@@ -13,6 +13,7 @@ Usage:
 """
 import sys
 import time
+import re
 
 from scrapers.anoboy import (
     scrape_home_updates,
