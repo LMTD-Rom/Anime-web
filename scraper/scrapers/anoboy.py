@@ -65,6 +65,37 @@ def scrape_home_updates():
     print(f"[Anoboy] Found {len(links)} Home Updates")
     return links
 
+def scrape_historic_anime(max_pages=20):
+    """Scrape recent history of anime updates across multiple pages."""
+    print(f"[Anoboy] Fetching Historic Anime (up to {max_pages} pages)...")
+    links = []
+    
+    for page in range(1, max_pages + 1):
+        url = f"{BASE_URL}/page/{page}/" if page > 1 else BASE_URL
+        soup = get_soup(url)
+        if not soup: break
+        
+        ngiri = soup.find('div', class_='ngiri')
+        container = ngiri if ngiri else soup
+        
+        page_links = []
+        for a in container.select('a:has(.list-anime)'):
+            href = a.get('href', '')
+            img = a.find('img')
+            if img and img.get('alt'):
+                raw_title = img.get('alt')
+                slug = re.sub(r'[^a-z0-9]+', '-', raw_title.lower()).strip('-')
+                anime_url = f"{BASE_URL}/anime/{slug}/"
+                if anime_url not in links:
+                    page_links.append(anime_url)
+                    
+        if not page_links:
+            break
+        links.extend(page_links)
+        
+    print(f"[Anoboy] Found {len(links)} Historic Animes (Pre-filter)")
+    return links
+
 def scrape_popular():
     """Scrape 'Popular' section from the sidebar"""
     print("[Anoboy] Fetching Popular...")
@@ -83,17 +114,28 @@ def scrape_popular():
     print(f"[Anoboy] Found {len(links)} Popular Animes")
     return links
 
-def scrape_movies():
-    """Scrape 'Movie' section"""
-    print("[Anoboy] Fetching Movies...")
-    soup = get_soup(f"{BASE_URL}/movie/")
-    if not soup: return []
+def scrape_movies(max_pages=5):
+    """Scrape 'Movie' section across multiple pages"""
+    print(f"[Anoboy] Fetching Movies (up to {max_pages} pages)...")
     links = []
-    for a in soup.select('a[href*="/anime/"]'):
-        href = a.get('href', '')
-        if '/anime/' in href and href not in links:
-            links.append(href if href.startswith('http') else BASE_URL + href)
-    print(f"[Anoboy] Found {len(links)} Movies")
+    for page in range(1, max_pages + 1):
+        url = f"{BASE_URL}/movie/page/{page}/" if page > 1 else f"{BASE_URL}/movie/"
+        soup = get_soup(url)
+        if not soup: break
+        
+        page_links = []
+        for a in soup.select('a[href*="/anime/"]'):
+            href = a.get('href', '')
+            if '/anime/' in href and href not in links:
+                anime_link = href if href.startswith('http') else BASE_URL + href
+                if anime_link not in links:
+                    page_links.append(anime_link)
+                    
+        if not page_links:
+            break
+        links.extend(page_links)
+        
+    print(f"[Anoboy] Found {len(links)} Movies (Pre-filter)")
     return links
 
 def scrape_genres(limit_per_genre=None):

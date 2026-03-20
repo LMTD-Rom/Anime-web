@@ -22,8 +22,10 @@ from scrapers.anoboy import (
     get_jadwal,
     scrape_anime_detail,
     scrape_episode_sources,
+    scrape_historic_anime,
 )
 from db import sync_all, upsert_video_sources
+
 
 BATCH = 5
 
@@ -36,9 +38,9 @@ def run_anoboy(limit=None):
     # 2. Scrape category URLs
     categories = {
         "Update Terbaru": scrape_home_updates(),
-        "Popular": scrape_popular(),
-        "Movie": scrape_movies(),
-        "Genre Picks": scrape_genres(limit_per_genre=10)
+        "Anime 2018 - Sekarang": scrape_historic_anime(max_pages=15),
+        "Movie 2020 - Sekarang": scrape_movies(max_pages=3),
+        "Popular": scrape_popular()
     }
     
     # Process each category
@@ -62,17 +64,35 @@ def run_anoboy(limit=None):
         success = 0
         
         for i, url in enumerate(urls):
-            print(f"[{i+1}/{total}] {url.split('/')[-2]}")
+            print(f"[{i+1}/{total}] {url.rstrip('/').split('/')[-1]}")
             try:
                 data = scrape_anime_detail(url, schedule_map, ongoing_slugs)
-                if data:
-                    # Tag the category in genres so frontend can filter easily
-                    # (In a real app, a dedicated 'categories' array might be better, but genres works fine for UI filtering)
-                    if cat_name not in data['anime']['genres']:
-                        data['anime']['genres'].append(cat_name)
+                if not data:
+                    continue
+                
+                # --- YEAR FILTERING LOGIC ---
+                release_date = data['anime'].get('release_date', '')
+                year_match = re.search(r'\b(20\d\d)\b', release_date)
+                year = int(year_match.group(1)) if year_match else 9999
+                
+                if cat_name == "Anime 2018 - Sekarang" and year < 2018:
+                    print(f"    -> [Skip] Release year {year} is older than 2018 limit.")
+                    continue
+                if cat_name == "Movie 2020 - Sekarang" and year < 2020:
+                    print(f"    -> [Skip] Movie release year {year} is older than 2020 limit.")
+                    continue
+                # ---------------------------
+
+                # Append the category to genres
+                if cat_name == "Update Terbaru" and "Update Terbaru" not in data['anime']['genres']:
+                    data['anime']['genres'].append("Update Terbaru")
+                if cat_name == "Popular" and "Popular" not in data['anime']['genres']:
+                    data['anime']['genres'].append("Popular")
+                if "Movie" in cat_name and "Movie" not in data['anime']['genres']:
+                    data['anime']['genres'].append("Movie")
                     
-                    batch.append(data)
-                    success += 1
+                batch.append(data)
+                success += 1
             except Exception as e:
                 print(f"  ERROR: {e}")
                 
