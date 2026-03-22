@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Link from "next/link";
 import NavClient from "./components/NavClient";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Sukinime — Stream Anime Sub Indo",
@@ -67,6 +68,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         }}>
           © 2026 Sukinime · Streaming Anime Sub Indonesia
         </footer>
+
+        {/* ═══ IKLAN: ADSTERRA POP-UNDER ═══ */}
+        {/* Memakai lazyOnload agar script iklan tidak menghalangi kecepatan web untuk user */}
+        <Script
+          src="https://pl28959331.profitablecpmratenetwork.com/9b/c8/cb/9bc8cbaa877c6c32dc86b9d53d57691e.js"
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   );
