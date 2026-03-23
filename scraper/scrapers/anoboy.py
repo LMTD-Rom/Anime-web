@@ -1,4 +1,5 @@
 import cloudscraper
+import requests
 from bs4 import BeautifulSoup
 import re
 import time
@@ -15,20 +16,19 @@ def _fetch(url, result_box, timeout=15):
     except Exception as e:
         result_box[0] = None
 
-def get_soup(url, retries=2, timeout=15):
-    """Fetch with hard wall-clock timeout using threads."""
+def get_soup(url, retries=2, timeout=12):
+    """Fetch with standard requests."""
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+    }
     for attempt in range(retries):
-        result_box = [None]
-        t = threading.Thread(target=_fetch, args=(url, result_box, timeout), daemon=True)
-        t.start()
-        t.join(timeout + 2)  # wait max timeout+2 seconds
-        
-        if t.is_alive():
-            print(f"  [timeout] {url[:60]}...")
-            continue  # skip, retry or give up
-        
-        if result_box[0] is not None:
-            return BeautifulSoup(result_box[0].text, 'html.parser')
+        try:
+            r = requests.get(url, headers=headers, timeout=timeout)
+            if r.status_code == 200:
+                return BeautifulSoup(r.text, 'html.parser')
+        except Exception:
+            pass
         
         if attempt < retries - 1:
             time.sleep(1)
@@ -39,7 +39,7 @@ def get_soup(url, retries=2, timeout=15):
 def scrape_home_updates():
     """Scrape 'Update Terbaru' from the homepage"""
     print("[Anoboy] Fetching Home Updates...")
-    soup = get_soup(BASE_URL)
+    soup = get_soup(BASE_URL + "page/1/")
     if not soup: return []
     links = []
     
@@ -243,17 +243,15 @@ def scrape_anime_detail(url, schedule_map, ongoing_slugs=None):
         if '/genres/' in href and text:
             genres.append(text)
     
-    # Status: try to read it from the page first, then fall back to jadwal whitelist.
     status = "Completed"  # safe default
     body_lower = soup.get_text(' ', strip=True).lower()
-    # Check for explicit status text on the page
-    if 'status' in body_lower:
-        # grab the part around 'status'
-        idx = body_lower.find('status')
-        snippet = body_lower[idx:idx+60]
-        if 'ongoing' in snippet:
+    
+    status_match = re.search(r'status\s*[:\-]?\s*(ongoing|completed|finished|sedang tayang|tamat)', body_lower)
+    if status_match:
+        val = status_match.group(1)
+        if val in ('ongoing', 'sedang tayang'):
             status = "Ongoing"
-        elif 'completed' in snippet or 'finished' in snippet:
+        elif val in ('completed', 'finished', 'tamat'):
             status = "Completed"
     # Jadwal list overrides: if slug is actively in schedule, it's definitely Ongoing
     if ongoing_slugs and slug in ongoing_slugs:

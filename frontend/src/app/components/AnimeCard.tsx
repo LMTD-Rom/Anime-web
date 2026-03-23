@@ -5,7 +5,7 @@ import Image from "next/image";
 export default function AnimeCard({ anime }: { anime: any }) {
     const genres: string[] = Array.isArray(anime.genres) ? anime.genres : [];
     const epCount = anime.episode_count ?? 0;
-    const isOngoing = anime.status === "Ongoing";
+    const isOngoing = typeof anime.status === "string" && anime.status.trim().toLowerCase() === "ongoing";
 
     return (
         <Link href={`/anime/${anime.slug}`}>
@@ -40,17 +40,10 @@ export default function AnimeCard({ anime }: { anime: any }) {
                         background: "linear-gradient(to top, rgba(7,7,13,0.95) 0%, transparent 100%)",
                     }} />
 
-                    {/* Status badge */}
-                    <div style={{ position: "absolute", top: 7, left: 7 }}>
-                        <span className={`badge ${isOngoing ? "badge-ongoing" : "badge-completed"}`}>
-                            {isOngoing ? "ON GOING" : "DONE"}
-                        </span>
-                    </div>
-
-                    {/* Episode count */}
+                    {/* Episode count - top right as in screenshot */}
                     {epCount > 0 && (
-                        <div style={{ position: "absolute", top: 7, right: 7, background: "rgba(0,0,0,0.75)", borderRadius: "4px", padding: "2px 6px" }}>
-                            <span style={{ color: "#fff", fontSize: "0.62rem", fontWeight: 700 }}>{epCount} eps</span>
+                        <div style={{ position: "absolute", top: 7, right: 7, background: "#3b4a9e", borderRadius: "4px", padding: "2px 6px", minWidth: "22px", textAlign: "center" }}>
+                            <span style={{ color: "#fff", fontSize: "0.7rem", fontWeight: 800 }}>{epCount}</span>
                         </div>
                     )}
 

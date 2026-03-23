@@ -23,20 +23,20 @@ export default async function TerbaruPage({ searchParams }: { searchParams: Prom
     const start = (page - 1) * itemsPerPage;
     const end = start + itemsPerPage - 1;
 
-    // Get total count
     const { count } = await supabase
         .from("animes")
         .select("*", { count: "exact", head: true })
-        .contains("genres", ["Update Terbaru"]);
+        .eq("status", "Ongoing")
+        .not("genres", "cs", '{"Popular"}');
 
     const totalItems = count || 0;
     const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-    // Get animes for current page
     const { data: animes } = await supabase
         .from("animes")
         .select("*")
-        .contains("genres", ["Update Terbaru"])
+        .eq("status", "Ongoing")
+        .not("genres", "cs", '{"Popular"}')
         .order("updated_at", { ascending: false })
         .range(start, end);
 

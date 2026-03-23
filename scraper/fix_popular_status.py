@@ -60,27 +60,10 @@ def main():
         
         # User said: popular often wrongly show ONGOING.
         if slug not in ongoing_slugs and current == "Ongoing":
-            # Potentially completed. Let's do a quick scrape to be 100% sure.
-            # But the user specifically said "popular banyak yang sudah selesai".
-            # If it's NOT in jadwal AND NOT in "Update Terbaru" (which we just fixed to Ongoing),
-            # it's likely completed.
-            
-            # Verify status on page
-            scraper = cloudscraper.create_scraper()
-            try:
-                sr = scraper.get(f"{BASE_URL}/anime/{slug}/", timeout=10)
-                if sr.status_code == 200:
-                    soup = BeautifulSoup(sr.text, 'html.parser')
-                    text = soup.get_text(' ', strip=True).lower()
-                    if 'ongoing' in text:
-                        continue # it is ongoing
-                    else:
-                        # Mark as completed
-                        print(f"Updating {slug} -> Completed")
-                        requests.patch(f"{SUPABASE_URL}/rest/v1/animes?slug=eq.{slug}", headers=HEADERS, json={"status": "Completed"})
-                        updated += 1
-            except:
-                pass
+            # If it's NOT in jadwal, it's completed.
+            print(f"Updating {slug} -> Completed")
+            requests.patch(f"{SUPABASE_URL}/rest/v1/animes?slug=eq.{slug}", headers=HEADERS, json={"status": "Completed"})
+            updated += 1
 
     print(f"Done. Updated {updated} popular anime to Completed.")
 

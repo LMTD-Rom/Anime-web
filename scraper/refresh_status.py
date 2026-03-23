@@ -101,12 +101,12 @@ def get_status_from_page(slug, ongoing_slugs, scraper):
         t = tag.get_text(' ', strip=True).lower()
         if len(t) > 60:
             continue
-        if 'ongoing' in t:
+        if any(k in t for k in ['ongoing', 'sedang tayang', 'airing']):
             return "Ongoing"
-        if 'completed' in t or 'finished' in t or 'tamat' in t:
+        if any(k in t for k in ['completed', 'finished', 'tamat']):
             return "Completed"
 
-    return "Completed"  # safe default if nothing found
+    return "Completed"  # safe default
 
 
 # ── Main ───────────────────────────────────────────────────────────
@@ -125,12 +125,17 @@ def main():
     else:
         url = f"{SUPABASE_URL}/rest/v1/animes?select=id,slug,title,status,source_url&limit=1000"
 
+    print(f"Fetching from: {url}")
     r = requests.get(url, headers=HEADERS)
+    print(f"Response Status: {r.status_code}")
     if r.status_code != 200:
         print(f"[ERROR] {r.status_code} {r.text[:200]}")
         return
 
     animes = r.json()
+    print(f"JSON returned type: {type(animes)}")
+    if isinstance(animes, list):
+        print(f"First item: {animes[0] if animes else 'N/A'}")
     print(f"Found {len(animes)} anime to check.\n")
 
     scraper = _make_scraper()

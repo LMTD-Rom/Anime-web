@@ -71,10 +71,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* ═══ IKLAN: ADSTERRA POP-UNDER ═══ */}
         {/* Memakai lazyOnload agar script iklan tidak menghalangi kecepatan web untuk user */}
+        {/*
         <Script
           src="https://pl28959331.profitablecpmratenetwork.com/9b/c8/cb/9bc8cbaa877c6c32dc86b9d53d57691e.js"
           strategy="lazyOnload"
         />
+        */}
       </body>
     </html>
   );

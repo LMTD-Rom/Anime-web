@@ -11,11 +11,12 @@ export const metadata = {
 export default async function HomePage() {
   const supabase = await createClient();
 
-  // 1. Get "Update Terbaru"
+  // 1. Get "Update Terbaru" (excluding Popular)
   const { data: terbaru } = await supabase
     .from("animes")
     .select("*")
-    .contains("genres", ["Update Terbaru"])
+    .eq("status", "Ongoing")
+    .not("genres", "cs", '{"Popular"}')
     .order("updated_at", { ascending: false })
     .limit(20);
 
@@ -113,81 +114,5 @@ export default async function HomePage() {
         )}
       </div>
     </div>
-  );
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function HeroCard({ anime, primary }: { anime: any; primary: boolean }) {
-  const genres: string[] = Array.isArray(anime.genres) ? anime.genres : [];
-  const isOngoing = anime.status === "Ongoing";
-
-  return (
-    <Link href={`/anime/${anime.slug}`} style={{ display: "block" }}>
-      <div className="hero-card" style={{
-        borderRadius: "10px",
-        overflow: "hidden",
-        background: "var(--surface2)",
-        border: primary ? "1px solid rgba(230,57,80,0.4)" : "1px solid var(--border)",
-        position: "relative",
-      }}>
-        {/* Cover image — 16:9 */}
-        <div style={{ position: "relative", aspectRatio: "16/9", width: "100%" }}>
-          {anime.cover_url ? (
-            <Image src={anime.cover_url} alt={anime.title} fill
-              style={{ objectFit: "cover", objectPosition: "top" }} unoptimized />
-          ) : (
-            <div style={{ width: "100%", height: "100%", background: "var(--surface2)" }} />
-          )}
-          {/* Overlay */}
-          <div style={{
-            position: "absolute", inset: 0,
-            background: "linear-gradient(135deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.55) 100%)",
-          }} />
-
-          {/* Top badges */}
-          <div style={{ position: "absolute", top: 10, left: 10, display: "flex", gap: "6px" }}>
-            {primary && (
-              <span className="badge badge-accent">✦ TERBARU</span>
-            )}
-            <span className={`badge ${isOngoing ? "badge-ongoing" : "badge-completed"}`}>
-              {isOngoing ? "ON GOING" : "DONE"}
-            </span>
-          </div>
-        </div>
-
-        {/* Info */}
-        <div style={{ padding: "0.9rem 1rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.4rem" }}>
-            {anime.release_year && (
-              <span style={{ color: "var(--accent)", fontSize: "0.7rem", fontWeight: 700 }}>
-                {anime.release_year}
-              </span>
-            )}
-            {genres.slice(0, 3).map((g) => (
-              <span key={g} style={{ color: "var(--text-dim)", fontSize: "0.66rem" }}>· {g}</span>
-            ))}
-          </div>
-
-          <h3 style={{
-            color: "#fff", fontWeight: 800, fontSize: "0.92rem",
-            margin: "0 0 0.4rem", lineHeight: 1.35,
-            overflow: "hidden", display: "-webkit-box",
-            WebkitLineClamp: 1, WebkitBoxOrient: "vertical" as const,
-          }}>
-            {anime.title}
-          </h3>
-
-          {anime.description && (
-            <p style={{
-              color: "var(--text-muted)", fontSize: "0.72rem", lineHeight: 1.55,
-              margin: 0, overflow: "hidden", display: "-webkit-box",
-              WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const,
-            }}>
-              {anime.description}
-            </p>
-          )}
-        </div>
-      </div>
-    </Link>
   );
 }

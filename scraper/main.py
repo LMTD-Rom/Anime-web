@@ -20,12 +20,12 @@ from scrapers.anoboy import (
     scrape_popular,
     scrape_movies,
     scrape_genres,
-    get_jadwal,
     scrape_anime_detail,
     scrape_episode_sources,
     scrape_historic_anime,
 )
 from db import sync_all, upsert_video_sources
+from jadwal_updater import update_jadwal
 
 
 BATCH = 5
@@ -33,12 +33,13 @@ BATCH = 5
 def run_anoboy(limit=None):
     print("=== Sukinime Scraper — Anoboy Primary ===\n")
     
-    # 1. Get schedule to help identify ongoing status
+    from scrapers.anoboy import get_jadwal
+    # Restore Anoboy jadwal fetching to correctly identify Ongoing series
     schedule_map, ongoing_slugs = get_jadwal()
     
     # 2. Scrape category URLs
     categories = {
-        "Update Terbaru": scrape_home_updates(),
+        "Update Terbaru": scrape_historic_anime(max_pages=10),
         "Anime 2018 - Sekarang": scrape_historic_anime(max_pages=15),
         "Movie 2020 - Sekarang": scrape_movies(max_pages=3),
         "Popular": scrape_popular()
@@ -84,13 +85,20 @@ def run_anoboy(limit=None):
                     continue
                 # ---------------------------
 
-                # Append the category to genres
-                if cat_name == "Update Terbaru" and "Update Terbaru" not in data['anime']['genres']:
-                    data['anime']['genres'].append("Update Terbaru")
-                if cat_name == "Popular" and "Popular" not in data['anime']['genres']:
-                    data['anime']['genres'].append("Popular")
+                # Append the category to genres and ensure status is Ongoing
+                if cat_name == "Update Terbaru":
+                    if "Update Terbaru" not in data['anime']['genres']:
+                        data['anime']['genres'].append("Update Terbaru")
+                    data['anime']['status'] = "Ongoing"
+                    
+                if cat_name == "Popular":
+                    if "Popular" not in data['anime']['genres']:
+                        data['anime']['genres'].append("Popular")
+                    data['anime']['status'] = "Ongoing"
+
                 if "Movie" in cat_name and "Movie" not in data['anime']['genres']:
                     data['anime']['genres'].append("Movie")
+                    data['anime']['status'] = "Completed"
                     
                 batch.append(data)
                 success += 1
@@ -99,7 +107,7 @@ def run_anoboy(limit=None):
                 
             # Flush batch
             if len(batch) >= BATCH or (i == total - 1 and batch):
-                print(f"  → Syncing {len(batch)} anime to DB...")
+                print(f"  -> Syncing {len(batch)} anime to DB...")
                 synced = sync_all(batch)
                 
                 # Scrape video sources for each episode in batch
@@ -118,7 +126,7 @@ def _scrape_video_sources(anime_episode_map):
     Scrape video sources from episode page and upsert.
     """
     if not anime_episode_map: return
-    print(f"  → Scraping {len(anime_episode_map)} episode sources...")
+    print(f"  -> Scraping {len(anime_episode_map)} episode sources...")
     
     for episode_id, ep_url in anime_episode_map.items():
         if not ep_url: continue
@@ -126,7 +134,7 @@ def _scrape_video_sources(anime_episode_map):
             sources = scrape_episode_sources(ep_url)
             if sources:
                 upsert_video_sources(episode_id, sources)
-                print(f"  ✓ {len(sources)} sources for ep {episode_id[:8]}...")
+                print(f"  [OK] {len(sources)} sources for ep {episode_id[:8]}...")
         except Exception as e:
             print(f"  WARN video sources: {e}")
         time.sleep(0.2)
@@ -138,3 +146,6 @@ if __name__ == '__main__':
         limit = int(sys.argv[idx + 1])
     
     run_anoboy(limit)
+    
+    # Update frontend schedule JSON after scraping
+    update_jadwal()

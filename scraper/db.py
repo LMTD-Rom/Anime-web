@@ -63,11 +63,9 @@ def sync_all(results):
         return {}
 
     import datetime
-    base_time = datetime.datetime.utcnow()
-    # Step 1: Batch upsert all animes with updated_at bumped so they float to the top
+    # Step 1: Batch upsert all animes. Only rely on existing updated_at or what the scraper passed.
     anime_payloads = []
     for i, item in enumerate(results):
-        item['anime']['updated_at'] = (base_time + datetime.timedelta(seconds=i)).isoformat()
         anime_payloads.append(item['anime'])
 
     res = sb_post("animes?on_conflict=slug", anime_payloads, prefer="return=representation", resolution="merge-duplicates")
@@ -129,7 +127,7 @@ def sync_all(results):
         else:
             print(f"  [ERROR] Episode chunk failed: {ep_res.text[:200]}")
 
-    print(f"  ✓ {len(results)} anime, {len(all_episodes)} episodes synced")
+    print(f"  [OK] {len(results)} anime, {len(all_episodes)} episodes synced")
     return episode_id_source
 
 

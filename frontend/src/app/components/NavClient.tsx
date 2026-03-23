@@ -9,6 +9,7 @@ const LINKS = [
     { href: "/terbaru", label: "Terbaru" },
     { href: "/popular", label: "Popular" },
     { href: "/movie", label: "Movie" },
+    { href: "/jadwal", label: "Jadwal" },
     { href: "/genres", label: "Genre" },
 ];
 

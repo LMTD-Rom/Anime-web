@@ -21,8 +21,8 @@ CREATE TABLE animes (
     episode_count INT DEFAULT 0,
     source_origin TEXT,                    -- 'anoboy' or 'samehadaku'
     source_url TEXT,                       -- Original URL for re-scraping
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+    created_at TIMESTAMP DEFAULT now(),
+    updated_at TIMESTAMP DEFAULT now()
 );
 
 -- 2. Table: episodes
@@ -31,7 +31,7 @@ CREATE TABLE episodes (
     anime_id UUID REFERENCES animes(id) ON DELETE CASCADE,
     episode_no INT NOT NULL,
     title TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    created_at TIMESTAMP DEFAULT now(),
     UNIQUE(anime_id, episode_no)
 );
 
