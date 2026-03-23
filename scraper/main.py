@@ -37,34 +37,30 @@ def run_anoboy(limit=None):
     # Restore Anoboy jadwal fetching to correctly identify Ongoing series
     schedule_map, ongoing_slugs = get_jadwal()
     
-    # 2. Scrape category URLs
-    categories = {
-        "Update Terbaru": scrape_historic_anime(max_pages=10),
-        "Anime 2018 - Sekarang": scrape_historic_anime(max_pages=15),
-        "Movie 2020 - Sekarang": scrape_movies(max_pages=3),
-        "Popular": scrape_popular()
-    }
+    # 2. Define category processing order
+    category_configs = [
+        ("Update Terbaru", lambda: scrape_historic_anime(max_pages=10)),
+        ("Anime 2018 - Sekarang", lambda: scrape_historic_anime(max_pages=15)),
+        ("Movie 2020 - Sekarang", lambda: scrape_movies(max_pages=3)),
+        ("Popular", lambda: scrape_popular())
+    ]
     
     # Process each category
-    for cat_name, urls in categories.items():
+    for cat_name, fetch_func in category_configs:
+        urls = fetch_func()
         if limit:
             urls = urls[:limit]
             
         # Deduplicate to prevent Postgres ON CONFLICT batch errors if Anoboy has duplicated thumbnails
         urls = list(dict.fromkeys(urls))
             
-        # Reverse to ensure the top-most item on Anoboy's page gets scraped/upserted LAST
-        # so it receives the absolute newest updated_at timestamp in the DB
-        urls = list(reversed(urls))
-        
         total = len(urls)
         if total == 0:
             continue
             
         print(f"\n--- Scraping Category: {cat_name} ({total} anime) ---")
-        batch = []
+        all_data = []
         success = 0
-        
         for i, url in enumerate(urls):
             print(f"[{i+1}/{total}] {url.rstrip('/').split('/')[-1]}")
             try:
@@ -100,24 +96,23 @@ def run_anoboy(limit=None):
                     data['anime']['genres'].append("Movie")
                     data['anime']['status'] = "Completed"
                     
-                batch.append(data)
+                all_data.append(data)
                 success += 1
             except Exception as e:
                 print(f"  ERROR: {e}")
-                
-            # Flush batch
-            if len(batch) >= BATCH or (i == total - 1 and batch):
-                print(f"  -> Syncing {len(batch)} anime to DB...")
-                synced = sync_all(batch)
-                
-                # Scrape video sources for each episode in batch
+            time.sleep(0.3)
+
+        # Sync all collected data in REVERSE order (oldest first, newest last)
+        # This ensures the newest items (processed last) get the latest timestamps in DB.
+        if all_data:
+            to_sync = list(reversed(all_data))
+            print(f"\n  -> Syncing {len(to_sync)} anime to DB in chronological order...")
+            for j in range(0, len(to_sync), BATCH):
+                chunk = to_sync[j:j+BATCH]
+                synced = sync_all(chunk)
                 if synced:
                     _scrape_video_sources(synced)
-                    
-                batch = []
-                
-            time.sleep(0.3)
-            
+
         print(f"Done category {cat_name}: {success}/{total} anime saved.")
 
 def _scrape_video_sources(anime_episode_map):
