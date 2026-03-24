@@ -65,8 +65,15 @@ def sync_all(results):
     import datetime
     # Step 1: Batch upsert all animes. Only rely on existing updated_at or what the scraper passed.
     anime_payloads = []
+    
+    # Generate explicit descending timestamps if not present, so the very last item in 'results' 
+    # (which came from reversing in main.py) gets the LATEST timestamp.
+    now = datetime.datetime.now(datetime.timezone.utc)
     for i, item in enumerate(results):
-        anime_payloads.append(item['anime'])
+        payload = item['anime'].copy()
+        # Add 1 second per index so the last item is technically the most recent
+        payload['updated_at'] = (now + datetime.timedelta(seconds=i)).isoformat()
+        anime_payloads.append(payload)
 
     res = sb_post("animes?on_conflict=slug", anime_payloads, prefer="return=representation", resolution="merge-duplicates")
 

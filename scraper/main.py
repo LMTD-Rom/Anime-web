@@ -39,7 +39,7 @@ def run_anoboy(limit=None):
     
     # 2. Define category processing order
     category_configs = [
-        ("Update Terbaru", lambda: scrape_historic_anime(max_pages=2)), # Reduced to 2 pages per user request
+        ("Update Hari Ini (Page 1)", lambda: scrape_historic_anime(max_pages=1)), # Processes & syncs immediately
         ("Anime 2018 - Sekarang", lambda: scrape_historic_anime(max_pages=15)),
         ("Movie 2020 - Sekarang", lambda: scrape_movies(max_pages=3)),
         ("Popular", lambda: scrape_popular())
@@ -92,7 +92,7 @@ def run_anoboy(limit=None):
                 # ---------------------------
 
                 # Append the category to genres and ensure status is Ongoing
-                if cat_name == "Update Terbaru":
+                if "Update " in cat_name:
                     if "Update Terbaru" not in data['anime']['genres']:
                         data['anime']['genres'].append("Update Terbaru")
                     data['anime']['status'] = "Ongoing"
