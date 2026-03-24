@@ -50,10 +50,10 @@ export default function AnimeCard({ anime }: { anime: any }) {
                     {/* Top Left: Type Badge */}
                     <div style={{ position: "absolute", top: 7, left: 7, zIndex: 10 }}>
                         <span style={{
-                            background: isMovie ? "rgba(230,57,80,0.8)" : "rgba(255,255,255,0.2)",
-                            backdropFilter: "blur(4px)",
+                            background: isMovie ? "rgba(230,57,80,0.9)" : "rgba(30,30,40,0.9)",
                             color: "#fff", fontSize: "0.58rem", fontWeight: 800,
-                            padding: "2px 6px", borderRadius: "4px", letterSpacing: "0.05em"
+                            padding: "2px 6px", borderRadius: "4px", letterSpacing: "0.05em",
+                            border: "1px solid rgba(255,255,255,0.15)"
                         }}>
                             {typeLabel}
                         </span>
@@ -73,13 +73,10 @@ export default function AnimeCard({ anime }: { anime: any }) {
                         )}
                     </div>
 
-                    {/* Bottom Title Overlay (Glassmorphism) */}
+                    {/* Bottom Title Overlay (Premium Gradient) */}
                     <div style={{
-                        position: "absolute", bottom: 0, left: 0, right: 0, padding: "0.6rem 0.65rem",
-                        background: "rgba(10, 10, 15, 0.6)",
-                        backdropFilter: "blur(8px)",
-                        WebkitBackdropFilter: "blur(8px)",
-                        borderTop: "1px solid rgba(255, 255, 255, 0.05)",
+                        position: "absolute", bottom: 0, left: 0, right: 0, padding: "2.5rem 0.65rem 0.6rem",
+                        background: "linear-gradient(to top, rgba(7,7,13,0.98) 0%, rgba(7,7,13,0.8) 40%, transparent 100%)",
                         zIndex: 10
                     }}>
                         <p style={{
@@ -87,6 +84,7 @@ export default function AnimeCard({ anime }: { anime: any }) {
                             margin: 0, lineHeight: 1.3,
                             overflow: "hidden", display: "-webkit-box",
                             WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const,
+                            textShadow: "0 2px 4px rgba(0,0,0,0.8)"
                         }}>{anime.title}</p>
                         {genres.length > 0 && (
                             <p style={{ color: "var(--text-muted)", fontSize: "0.66rem", margin: "3px 0 0" }}>
