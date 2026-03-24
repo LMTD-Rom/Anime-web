@@ -24,7 +24,7 @@ from scrapers.anoboy import (
     scrape_episode_sources,
     scrape_historic_anime,
 )
-from db import sync_all, upsert_video_sources
+from db import sync_all, upsert_video_sources, sb_get
 from jadwal_updater import update_jadwal
 
 
@@ -39,12 +39,22 @@ def run_anoboy(limit=None):
     
     # 2. Define category processing order
     category_configs = [
-        ("Update Terbaru", lambda: scrape_historic_anime(max_pages=10)),
+        ("Update Terbaru", lambda: scrape_historic_anime(max_pages=2)), # Reduced to 2 pages per user request
         ("Anime 2018 - Sekarang", lambda: scrape_historic_anime(max_pages=15)),
         ("Movie 2020 - Sekarang", lambda: scrape_movies(max_pages=3)),
         ("Popular", lambda: scrape_popular())
     ]
     
+    global_ongoing_slugs = set()
+    
+    # Pre-load existing Ongoing anime from DB so they aren't marked Completed by historic scrapes
+    db_ongoing = sb_get("animes", "?select=slug&status=eq.Ongoing")
+    if db_ongoing:
+        for row in db_ongoing:
+            if 'slug' in row:
+                global_ongoing_slugs.add(row['slug'])
+        print(f"[*] Pre-loaded {len(global_ongoing_slugs)} 'Ongoing' anime from database to protect their status.")
+        
     # Process each category
     for cat_name, fetch_func in category_configs:
         urls = fetch_func()
@@ -86,15 +96,22 @@ def run_anoboy(limit=None):
                     if "Update Terbaru" not in data['anime']['genres']:
                         data['anime']['genres'].append("Update Terbaru")
                     data['anime']['status'] = "Ongoing"
+                    global_ongoing_slugs.add(data['anime']['slug'])
                     
-                if cat_name == "Popular":
+                elif cat_name == "Popular":
                     if "Popular" not in data['anime']['genres']:
                         data['anime']['genres'].append("Popular")
                     data['anime']['status'] = "Ongoing"
+                    global_ongoing_slugs.add(data['anime']['slug'])
 
-                if "Movie" in cat_name and "Movie" not in data['anime']['genres']:
-                    data['anime']['genres'].append("Movie")
+                elif "Movie" in cat_name:
+                    if "Movie" not in data['anime']['genres']:
+                        data['anime']['genres'].append("Movie")
                     data['anime']['status'] = "Completed"
+                    
+                # PROTECT ONGOING STATUS: If it was marked ongoing in a previous category (like Update Terbaru), keep it ongoing
+                elif data['anime']['slug'] in global_ongoing_slugs:
+                    data['anime']['status'] = "Ongoing"
                     
                 all_data.append(data)
                 success += 1
