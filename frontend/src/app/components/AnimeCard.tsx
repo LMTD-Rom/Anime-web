@@ -5,7 +5,14 @@ import Image from "next/image";
 export default function AnimeCard({ anime }: { anime: any }) {
     const genres: string[] = Array.isArray(anime.genres) ? anime.genres : [];
     const epCount = anime.episode_count ?? 0;
-    const isOngoing = typeof anime.status === "string" && anime.status.trim().toLowerCase() === "ongoing";
+
+    const isMovie = genres.some(g => g.toLowerCase() === "movie" || g.toLowerCase() === "movies");
+    const typeLabel = isMovie ? "MOVIE" : "TV";
+
+    // Determine if updated recently (within 48 hours)
+    const updatedAt = anime.updated_at ? new Date(anime.updated_at).getTime() : 0;
+    const now = new Date().getTime();
+    const isNew = (now - updatedAt) < (2 * 24 * 60 * 60 * 1000);
 
     return (
         <Link href={`/anime/${anime.slug}`}>
@@ -18,13 +25,14 @@ export default function AnimeCard({ anime }: { anime: any }) {
                 border: "1px solid var(--border)",
             }}>
                 {/* Cover */}
-                <div style={{ position: "relative", aspectRatio: "2/3", width: "100%", background: "#0f0f1f" }}>
+                <div style={{ position: "relative", aspectRatio: "2/3", width: "100%", background: "#0f0f1f", overflow: "hidden" }}>
                     {anime.cover_url ? (
                         <Image
                             src={anime.cover_url}
                             alt={anime.title}
                             fill
                             style={{ objectFit: "cover" }}
+                            className="anime-card-img"
                             unoptimized
                             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                         />
@@ -34,21 +42,46 @@ export default function AnimeCard({ anime }: { anime: any }) {
                         </div>
                     )}
 
-                    {/* Bottom gradient */}
+                    {/* Play Button Overlay (Hover) */}
+                    <div className="play-overlay">
+                        <div className="play-icon">▶</div>
+                    </div>
+
+                    {/* Top Left: Type Badge */}
+                    <div style={{ position: "absolute", top: 7, left: 7, zIndex: 10 }}>
+                        <span style={{
+                            background: isMovie ? "rgba(230,57,80,0.8)" : "rgba(255,255,255,0.2)",
+                            backdropFilter: "blur(4px)",
+                            color: "#fff", fontSize: "0.58rem", fontWeight: 800,
+                            padding: "2px 6px", borderRadius: "4px", letterSpacing: "0.05em"
+                        }}>
+                            {typeLabel}
+                        </span>
+                    </div>
+
+                    {/* Top Right: Episode count & NEW label */}
+                    <div style={{ position: "absolute", top: 7, right: 7, display: "flex", gap: "4px", zIndex: 10 }}>
+                        {isNew && (
+                            <div style={{ background: "var(--accent)", borderRadius: "4px", padding: "2px 6px", display: "flex", alignItems: "center" }}>
+                                <span style={{ color: "#fff", fontSize: "0.55rem", fontWeight: 800, letterSpacing: "0.05em" }}>NEW</span>
+                            </div>
+                        )}
+                        {epCount > 0 && (
+                            <div style={{ background: "#3b4a9e", borderRadius: "4px", padding: "2px 6px", minWidth: "22px", textAlign: "center" }}>
+                                <span style={{ color: "#fff", fontSize: "0.7rem", fontWeight: 800 }}>{epCount}</span>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Bottom Title Overlay (Glassmorphism) */}
                     <div style={{
-                        position: "absolute", bottom: 0, left: 0, right: 0, height: "60%",
-                        background: "linear-gradient(to top, rgba(7,7,13,0.95) 0%, transparent 100%)",
-                    }} />
-
-                    {/* Episode count - top right as in screenshot */}
-                    {epCount > 0 && (
-                        <div style={{ position: "absolute", top: 7, right: 7, background: "#3b4a9e", borderRadius: "4px", padding: "2px 6px", minWidth: "22px", textAlign: "center" }}>
-                            <span style={{ color: "#fff", fontSize: "0.7rem", fontWeight: 800 }}>{epCount}</span>
-                        </div>
-                    )}
-
-                    {/* Title overlay */}
-                    <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0.6rem 0.65rem" }}>
+                        position: "absolute", bottom: 0, left: 0, right: 0, padding: "0.6rem 0.65rem",
+                        background: "rgba(10, 10, 15, 0.6)",
+                        backdropFilter: "blur(8px)",
+                        WebkitBackdropFilter: "blur(8px)",
+                        borderTop: "1px solid rgba(255, 255, 255, 0.05)",
+                        zIndex: 10
+                    }}>
                         <p style={{
                             color: "#fff", fontWeight: 700, fontSize: "0.8rem",
                             margin: 0, lineHeight: 1.3,
@@ -57,7 +90,7 @@ export default function AnimeCard({ anime }: { anime: any }) {
                         }}>{anime.title}</p>
                         {genres.length > 0 && (
                             <p style={{ color: "var(--text-muted)", fontSize: "0.66rem", margin: "3px 0 0" }}>
-                                {genres.slice(0, 2).join(" · ")}
+                                {genres.filter(g => g !== "Update Terbaru" && g !== "Popular").slice(0, 2).join(" · ")}
                             </p>
                         )}
                     </div>
