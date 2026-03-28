@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
+import ThemeToggle from "./ThemeToggle";
 
 const LINKS = [
     { href: "/", label: "Home" },
@@ -11,6 +12,7 @@ const LINKS = [
     { href: "/movie", label: "Movie" },
     { href: "/jadwal", label: "Jadwal" },
     { href: "/genres", label: "Genre" },
+    { href: "/watchlist", label: "♥ Watchlist" },
 ];
 
 export default function NavClient() {
@@ -198,6 +200,7 @@ export default function NavClient() {
                         <svg style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                     </div>
                 </form>
+                <ThemeToggle />
             </div>
 
             {/* MOBILE HAMBURGER BUTTON */}

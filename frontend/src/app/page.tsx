@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import Image from "next/image";
 import AnimeCard from "@/app/components/AnimeCard";
+import HeroBanner from "@/app/components/HeroBanner";
 
 export const metadata = {
   title: "Sukinime — Stream Anime Sub Indo",
@@ -34,10 +35,28 @@ export default async function HomePage() {
   const mainData = fallback ? latestFallback?.slice(0, 20) : terbaru;
   const popularData = fallback ? latestFallback?.slice(20, 30) : popular;
 
-  return (
-    <div style={{ minHeight: "100vh", padding: "2.5rem 0 4rem" }}>
-      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem" }}>
+  // 3. Get 3 random recommendations from any anime with description
+  const { data: recData } = await supabase
+    .from("animes")
+    .select("slug, title, cover_url, genres, description")
+    .not("description", "is", null)
+    .order("updated_at", { ascending: true }) // least recently shown
+    .limit(3);
 
+  // Assemble Hero Slides: 3 terbaru + 2 popular + 3 recs (total 8)
+  const heroSlides = [
+    ...(mainData?.slice(0, 3) ?? []).map(a => ({ ...a, badge: "Update Terbaru" })),
+    ...(popularData?.slice(0, 2) ?? []).map(a => ({ ...a, badge: "Popular" })),
+    ...(recData?.slice(0, 3) ?? []).map(a => ({ ...a, badge: "Rekomendasi" })),
+  ];
+
+  return (
+    <div style={{ minHeight: "100vh", padding: "0 0 4rem" }}>
+
+      {/* ═══ HERO CAROUSEL ═══ */}
+      {heroSlides.length > 0 && <HeroBanner slides={heroSlides} />}
+
+      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem" }}>
         {(!mainData || mainData.length === 0) ? (
           <div style={{ textAlign: "center", padding: "5rem 0" }}>
             <p style={{ color: "var(--text-dim)", fontSize: "0.9rem" }}>
@@ -47,7 +66,7 @@ export default async function HomePage() {
         ) : (
           <div style={{ display: "flex", gap: "2rem", flexDirection: "column" }} className="lg:flex-row">
 
-            {/* ═══ LEFT: UPDATE TERBARU ═══ */}
+            {/* LEFT: UPDATE TERBARU */}
             <div style={{ flex: "1 1 auto" }}>
               <div style={{ marginBottom: "1.25rem" }}>
                 <Link href="/terbaru" className="section-label" style={{ marginBottom: 0, display: "flex", justifyContent: "space-between", alignItems: "center", textDecoration: "none" }}>
@@ -55,7 +74,6 @@ export default async function HomePage() {
                   <span style={{ fontSize: "0.8rem", color: "var(--accent)", fontWeight: 600 }}>Lihat Semua →</span>
                 </Link>
               </div>
-
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {mainData?.map((anime) => (
                   <AnimeCard key={anime.id} anime={anime} />
@@ -63,27 +81,22 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* ═══ RIGHT: POPULAR SIDEBAR ═══ */}
+            {/* RIGHT: POPULAR SIDEBAR */}
             <aside style={{ width: "100%", maxWidth: "100%" }} className="lg:max-w-[320px] shrink-0">
               <Link href="/popular" className="section-label" style={{ marginBottom: "1.25rem", display: "flex", justifyContent: "space-between", alignItems: "center", textDecoration: "none" }}>
                 <span>Popular</span>
                 <span style={{ fontSize: "0.8rem", color: "var(--accent)", fontWeight: 600 }}>Lihat Semua →</span>
               </Link>
-
               <div style={{
-                background: "var(--surface)",
-                border: "1px solid var(--border)",
-                borderRadius: "12px",
-                padding: "1rem",
-                display: "flex",
-                flexDirection: "column",
-                gap: "1rem"
+                background: "var(--surface)", border: "1px solid var(--border)",
+                borderRadius: "12px", padding: "1rem",
+                display: "flex", flexDirection: "column", gap: "1rem"
               }}>
-                {popularData && popularData.length > 0 ? popularData.map((anime, idx) => (
+                {popularData && popularData.length > 0 ? popularData.map((anime) => (
                   <Link key={anime.id} href={`/anime/${anime.slug}`} style={{ display: "flex", gap: "12px", alignItems: "center" }} className="group">
                     <div style={{
-                      width: "60px", height: "80px",
-                      position: "relative", borderRadius: "6px", overflow: "hidden", flexShrink: 0,
+                      width: "60px", height: "80px", position: "relative",
+                      borderRadius: "6px", overflow: "hidden", flexShrink: 0,
                       border: "1px solid var(--border)"
                     }}>
                       {anime.cover_url ? (
@@ -94,13 +107,13 @@ export default async function HomePage() {
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <h4 style={{
-                        color: "#fff", fontSize: "0.85rem", fontWeight: 700, margin: "0 0 4px",
+                        color: "var(--text)", fontSize: "0.85rem", fontWeight: 700, margin: "0 0 4px",
                         overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical"
                       }} className="group-hover:text-accent transition-colors">
                         {anime.title}
                       </h4>
-                      <div style={{ color: "var(--text-muted)", fontSize: "0.7rem", display: "flex", flexWrap: "wrap", gap: "4px" }}>
-                        {Array.isArray(anime.genres) && anime.genres.filter((g: any) => g !== 'Popular' && g !== 'Update Terbaru').slice(0, 2).join(', ')}
+                      <div style={{ color: "var(--text-muted)", fontSize: "0.7rem" }}>
+                        {Array.isArray(anime.genres) && (anime.genres as string[]).filter(g => g !== 'Popular' && g !== 'Update Terbaru').slice(0, 2).join(', ')}
                       </div>
                     </div>
                   </Link>

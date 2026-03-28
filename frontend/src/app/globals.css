@@ -226,6 +226,16 @@ img {
   }
 }
 
+@keyframes progress-bar {
+  from {
+    width: 0%;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+
 /* ── Pagination ─────────────────────────────── */
 .pagination-btn {
   padding: 8px 14px;
