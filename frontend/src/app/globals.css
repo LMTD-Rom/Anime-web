@@ -272,6 +272,31 @@ button:active {
   transition: transform 0.1s;
 }
 
+/* ── Instagram Button (Footer) ──────────────── */
+.ig-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 1.2rem;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.85rem;
+  box-shadow: 0 4px 20px rgba(253, 29, 29, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ig-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(253, 29, 29, 0.5);
+}
+
+.ig-btn:active {
+  transform: scale(0.96) translateY(0) !important;
+}
+
 /* ── Episode Card ─────────────────────────── */
 .episode-card-inner {
   background: #111;
