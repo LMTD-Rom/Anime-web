@@ -68,26 +68,41 @@ export default function WatchPage({ params }: { params: Promise<{ episodeId: str
                     setActiveIdx(0);
                 }
 
-                // Save continue watching to localStorage
+                // Save continue watching
                 const anime = (ep as Episode).animes;
                 if (anime) {
+                    const entry = {
+                        episodeId,
+                        animeSlug: anime.slug,
+                        animeTitle: anime.title,
+                        coverUrl: anime.cover_url ?? null,
+                        episodeNo: (ep as Episode).episode_no,
+                        watchedAt: Date.now(),
+                    };
+
+                    // Always write to localStorage as fallback
                     try {
                         const key = "sukinime_continue";
                         const existing: object[] = JSON.parse(localStorage.getItem(key) ?? "[]");
                         const filtered = (existing as Array<{ episodeId: string }>).filter(
                             (x) => x.episodeId !== episodeId
                         );
-                        const entry = {
-                            episodeId,
-                            animeSlug: anime.slug,
-                            animeTitle: anime.title,
-                            coverUrl: anime.cover_url ?? null,
-                            episodeNo: (ep as Episode).episode_no,
-                            watchedAt: Date.now(),
-                        };
-                        const updated = [entry, ...filtered].slice(0, 12);
-                        localStorage.setItem(key, JSON.stringify(updated));
+                        localStorage.setItem(key, JSON.stringify([entry, ...filtered].slice(0, 12)));
                     } catch { /* ignore */ }
+
+                    // If logged in, also save to Supabase
+                    const { data: userData } = await supabase.auth.getUser();
+                    if (userData.user) {
+                        await supabase.from("watch_history").upsert({
+                            user_id: userData.user.id,
+                            episode_id: episodeId,
+                            anime_slug: anime.slug,
+                            anime_title: anime.title,
+                            cover_url: anime.cover_url ?? null,
+                            episode_no: (ep as Episode).episode_no,
+                            watched_at: new Date().toISOString(),
+                        }, { onConflict: "user_id,episode_id" });
+                    }
                 }
             }
             setLoading(false);

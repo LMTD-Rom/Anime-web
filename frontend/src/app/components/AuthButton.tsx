@@ -3,20 +3,31 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function AuthButton() {
     const [user, setUser] = useState<User | null>(null);
+    const [profile, setProfile] = useState<{ display_name: string | null; avatar_url: string | null } | null>(null);
     const [loading, setLoading] = useState(true);
     const [menuOpen, setMenuOpen] = useState(false);
+
+    const fetchProfile = async (userId: string) => {
+        const supabase = createClient();
+        const { data } = await supabase.from("profiles").select("display_name,avatar_url").eq("id", userId).single();
+        if (data) setProfile(data);
+    };
 
     useEffect(() => {
         const supabase = createClient();
         supabase.auth.getUser().then(({ data }) => {
             setUser(data.user);
+            if (data.user) fetchProfile(data.user.id);
             setLoading(false);
         });
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setUser(session?.user ?? null);
+            if (session?.user) fetchProfile(session.user.id);
+            else setProfile(null);
         });
         return () => subscription.unsubscribe();
     }, []);
@@ -39,29 +50,27 @@ export default function AuthButton() {
 
     if (!user) {
         return (
-            <button
-                onClick={handleLogin}
+            <Link
+                href="/login"
                 style={{
                     display: "inline-flex", alignItems: "center", gap: "0.4rem",
                     padding: "5px 14px", borderRadius: "6px",
                     background: "var(--accent)", color: "#fff",
                     fontWeight: 700, fontSize: "0.8rem",
-                    border: "none", cursor: "pointer",
+                    textDecoration: "none",
                     transition: "opacity 0.15s",
                 }}
-                onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
-                onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
             >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z" />
                 </svg>
                 Login
-            </button>
+            </Link>
         );
     }
 
-    const avatar = user.user_metadata?.avatar_url;
-    const name = user.user_metadata?.full_name ?? user.email?.split("@")[0] ?? "User";
+    const avatar = profile?.avatar_url ?? user?.user_metadata?.avatar_url ?? null;
+    const name = profile?.display_name ?? user?.user_metadata?.full_name ?? user?.email?.split("@")[0] ?? "User";
 
     return (
         <div style={{ position: "relative" }}>
@@ -77,11 +86,13 @@ export default function AuthButton() {
                 onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.borderColor = "var(--border)")}
             >
                 {avatar ? (
-                    <Image
-                        src={avatar} alt={name} width={26} height={26}
-                        style={{ borderRadius: "50%", objectFit: "cover" }}
-                        unoptimized
-                    />
+                    <div style={{ width: "26px", height: "26px", borderRadius: "50%", overflow: "hidden", flexShrink: 0, position: "relative" }}>
+                        <Image
+                            src={avatar} alt={name} fill
+                            style={{ objectFit: "cover" }}
+                            unoptimized
+                        />
+                    </div>
                 ) : (
                     <div style={{
                         width: "26px", height: "26px", borderRadius: "50%",
@@ -120,6 +131,19 @@ export default function AuthButton() {
                             <p style={{ color: "var(--text)", fontWeight: 700, fontSize: "0.85rem", margin: "0 0 2px" }}>{name}</p>
                             <p style={{ color: "var(--text-muted)", fontSize: "0.72rem", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email}</p>
                         </div>
+                        <Link
+                            href="/profile"
+                            onClick={() => setMenuOpen(false)}
+                            style={{
+                                width: "100%", padding: "0.5rem 0.75rem",
+                                color: "var(--text-muted)", fontSize: "0.82rem",
+                                fontWeight: 600, textAlign: "left",
+                                borderRadius: "6px", display: "flex", alignItems: "center", gap: "0.5rem",
+                                textDecoration: "none", transition: "background 0.15s, color 0.15s",
+                            }}
+                        >
+                            👤 Profil Saya
+                        </Link>
                         <button
                             onClick={handleLogout}
                             style={{

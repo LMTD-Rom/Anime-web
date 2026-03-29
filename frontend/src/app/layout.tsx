@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Link from "next/link";
 import NavClient from "./components/NavClient";
+import GuestNotif from "./components/GuestNotif";
 import Script from "next/script";
 
 export const metadata: Metadata = {
@@ -51,6 +52,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <NavClient />
           </div>
         </nav>
+
+        {/* Guest notification toast */}
+        <GuestNotif />
 
         {/* Page content (offset for fixed nav) */}
         <div className="page-content">

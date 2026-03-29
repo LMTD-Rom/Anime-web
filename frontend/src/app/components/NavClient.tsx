@@ -11,7 +11,6 @@ const LINKS = [
     { href: "/terbaru", label: "Terbaru" },
     { href: "/popular", label: "Popular" },
     { href: "/movie", label: "Movie" },
-    { href: "/trending", label: "🔥 Trending" },
     { href: "/jadwal", label: "Jadwal" },
     { href: "/genres", label: "Genre" },
     { href: "/watchlist", label: "♥ Watchlist" },
@@ -209,19 +208,21 @@ export default function NavClient() {
                 <AuthButton />
             </div>
 
-            {/* MOBILE HAMBURGER BUTTON */}
-            <button
-                className="md:hidden flex items-center justify-center"
-                style={{ width: "40px", height: "40px", color: "#fff" }}
-                onClick={() => setIsOpen(true)}
-                aria-label="Open Menu"
-            >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
-            </button>
+            {/* MOBILE: AuthButton + Hamburger */}
+            <div className="md:hidden flex items-center gap-2">
+                <AuthButton />
+                <button
+                    style={{ width: "40px", height: "40px", color: "#fff" }}
+                    onClick={() => setIsOpen(true)}
+                    aria-label="Open Menu"
+                >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
 
             {/* RENDER PORTAL */}
             {overlay}
