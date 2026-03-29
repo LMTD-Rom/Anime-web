@@ -3,6 +3,8 @@ import Link from "next/link";
 import Image from "next/image";
 import AnimeCard from "@/app/components/AnimeCard";
 import HeroBanner from "@/app/components/HeroBanner";
+import ContinueWatching from "@/app/components/ContinueWatching";
+import { Suspense } from "react";
 
 export const metadata = {
   title: "Sukinime — Stream Anime Sub Indo",
@@ -57,6 +59,10 @@ export default async function HomePage() {
       {heroSlides.length > 0 && <HeroBanner slides={heroSlides} />}
 
       <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 1.5rem" }}>
+        {/* ═══ LANJUT NONTON ═══ */}
+        <Suspense>
+          <ContinueWatching />
+        </Suspense>
         {(!mainData || mainData.length === 0) ? (
           <div style={{ textAlign: "center", padding: "5rem 0" }}>
             <p style={{ color: "var(--text-dim)", fontSize: "0.9rem" }}>

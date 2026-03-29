@@ -4,12 +4,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import ThemeToggle from "./ThemeToggle";
+import AuthButton from "./AuthButton";
 
 const LINKS = [
     { href: "/", label: "Home" },
     { href: "/terbaru", label: "Terbaru" },
     { href: "/popular", label: "Popular" },
     { href: "/movie", label: "Movie" },
+    { href: "/trending", label: "🔥 Trending" },
     { href: "/jadwal", label: "Jadwal" },
     { href: "/genres", label: "Genre" },
     { href: "/watchlist", label: "♥ Watchlist" },
@@ -144,6 +146,9 @@ export default function NavClient() {
                             </Link>
                         );
                     })}
+                    <div style={{ paddingTop: "0.5rem", borderTop: "1px solid var(--border)" }}>
+                        <AuthButton />
+                    </div>
                 </div>
             </div>
         </div>,
@@ -201,6 +206,7 @@ export default function NavClient() {
                     </div>
                 </form>
                 <ThemeToggle />
+                <AuthButton />
             </div>
 
             {/* MOBILE HAMBURGER BUTTON */}
