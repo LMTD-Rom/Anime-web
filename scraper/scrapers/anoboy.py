@@ -39,7 +39,7 @@ def get_soup(url, retries=2, timeout=12):
 def scrape_home_updates():
     """Scrape 'Update Terbaru' from the homepage"""
     print("[Anoboy] Fetching Home Updates...")
-    soup = get_soup(BASE_URL + "page/1/")
+    soup = get_soup(BASE_URL + "/page/1/")
     if not soup: return []
     links = []
     
@@ -47,7 +47,9 @@ def scrape_home_updates():
     ngiri = soup.find('div', class_='ngiri')
     container = ngiri if ngiri else soup
     
-    for a in container.select('a:has(.list-anime)'):
+    for a in container.find_all('a'):
+        if not a.find(class_='list-anime'):
+            continue
         href = a.get('href', '')
         # Anoboy homepage links to EPISODES (e.g., /boruto-episode-123/). 
         # We want the base anime. We can usually strip the episode part or just grab the title to search.
@@ -79,7 +81,9 @@ def scrape_historic_anime(max_pages=20):
         container = ngiri if ngiri else soup
         
         page_links = []
-        for a in container.select('a:has(.list-anime)'):
+        for a in container.find_all('a'):
+            if not a.find(class_='list-anime'):
+                continue
             href = a.get('href', '')
             img = a.find('img')
             if img and img.get('alt'):

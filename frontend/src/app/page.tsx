@@ -4,6 +4,7 @@ import Image from "next/image";
 import AnimeCard from "@/app/components/AnimeCard";
 import HeroBanner from "@/app/components/HeroBanner";
 import ContinueWatching from "@/app/components/ContinueWatching";
+import SaweriaMilestone from "@/app/components/SaweriaMilestone";
 import { Suspense } from "react";
 
 export const metadata = {
@@ -127,6 +128,9 @@ export default async function HomePage() {
                   <p style={{ color: "var(--text-dim)", fontSize: "0.8rem", textAlign: "center", padding: "1rem 0" }}>Belum ada data popular.</p>
                 )}
               </div>
+
+              {/* Saweria Milestone Widget */}
+              <SaweriaMilestone />
             </aside>
 
           </div>

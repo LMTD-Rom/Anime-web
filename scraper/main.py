@@ -39,9 +39,7 @@ def run_anoboy(limit=None):
     
     # 2. Define category processing order
     category_configs = [
-        ("Update Hari Ini (Page 1)", lambda: scrape_historic_anime(max_pages=1)), # Processes & syncs immediately
-        ("Anime 2018 - Sekarang", lambda: scrape_historic_anime(max_pages=15)),
-        ("Movie 2020 - Sekarang", lambda: scrape_movies(max_pages=3)),
+        ("Update Terbaru", lambda: scrape_home_updates()),
         ("Popular", lambda: scrape_popular())
     ]
     
@@ -78,18 +76,6 @@ def run_anoboy(limit=None):
                 if not data:
                     continue
                 
-                # --- YEAR FILTERING LOGIC ---
-                release_date = data['anime'].get('release_date', '')
-                year_match = re.search(r'\b(20\d\d)\b', release_date)
-                year = int(year_match.group(1)) if year_match else 9999
-                
-                if cat_name == "Anime 2018 - Sekarang" and year < 2018:
-                    print(f"    -> [Skip] Release year {year} is older than 2018 limit.")
-                    continue
-                if cat_name == "Movie 2020 - Sekarang" and year < 2020:
-                    print(f"    -> [Skip] Movie release year {year} is older than 2020 limit.")
-                    continue
-                # ---------------------------
 
                 # Append the category to genres and ensure status is Ongoing
                 if "Update " in cat_name:
@@ -104,11 +90,7 @@ def run_anoboy(limit=None):
                     data['anime']['status'] = "Ongoing"
                     global_ongoing_slugs.add(data['anime']['slug'])
 
-                elif "Movie" in cat_name:
-                    if "Movie" not in data['anime']['genres']:
-                        data['anime']['genres'].append("Movie")
-                    data['anime']['status'] = "Completed"
-                    
+
                 # PROTECT ONGOING STATUS: If it was marked ongoing in a previous category (like Update Terbaru), keep it ongoing
                 elif data['anime']['slug'] in global_ongoing_slugs:
                     data['anime']['status'] = "Ongoing"

@@ -2,6 +2,7 @@
 
 import { use, useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
+import SaweriaSupport from "../../components/SaweriaSupport";
 
 interface VideoSource {
     id: string;
@@ -185,6 +186,9 @@ export default function WatchPage({ params }: { params: Promise<{ episodeId: str
                     </div>
                 )}
             </div>
+
+            {/* Saweria Support (Unified) */}
+            <SaweriaSupport />
 
             {/* Server Switcher */}
             {sources.length > 0 && (

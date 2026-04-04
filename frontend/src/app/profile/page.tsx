@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import type { User } from "@supabase/supabase-js";
+import SaweriaMilestone from "../components/SaweriaMilestone";
 
 interface Profile {
     display_name: string | null;
@@ -270,8 +271,11 @@ export default function ProfilePage() {
                 ))}
             </div>
 
+            {/* Saweria Milestone */}
+            <SaweriaMilestone />
+
             {/* Action Buttons */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginTop: "1.75rem" }}>
                 <button
                     onClick={handleSave}
                     disabled={saving}

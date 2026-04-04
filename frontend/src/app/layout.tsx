@@ -3,6 +3,7 @@ import "./globals.css";
 import Link from "next/link";
 import NavClient from "./components/NavClient";
 import GuestNotif from "./components/GuestNotif";
+import SaweriaFloat from "./components/SaweriaFloat";
 import Script from "next/script";
 
 export const metadata: Metadata = {
@@ -130,6 +131,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             © 2026 Sukinime · Streaming Anime Sub Indonesia · All Rights Reserved
           </div>
         </footer>
+
+        {/* ═══ SAWERIA FLOATING DONATION ═══ */}
+        <SaweriaFloat />
 
         {/* ═══ IKLAN: ADSTERRA POP-UNDER ═══ */}
         {/* Memakai lazyOnload agar script iklan tidak menghalangi kecepatan web untuk user */}
