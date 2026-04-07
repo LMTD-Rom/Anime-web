@@ -1,17 +1,12 @@
 {
-  "Senin": [],
-  "Selasa": [
+  "Senin": [
     {
-      "title": "Saikyou no Shokugyou wa Yuusha demo Kenja demo Naku Kanteishi (Kari) Rashii desu yo?",
-      "time": "23:51 WIB",
-      "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2026/03/Saikyou-no-Shokugyou-wa-Yuusha-demo-Kenja-demo-Naku-Kanteishi-Kari-Rashii-desu-yo.jpg"
-    },
-    {
-      "title": "Maid-san wa Taberu dake",
-      "time": "23:56 WIB",
-      "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2026/03/Maid-san-wa-Taberu-dake.jpg"
+      "title": "Ingoku Danchi",
+      "time": "00:57 WIB",
+      "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2026/04/Ingoku-Danchi.jpg"
     }
   ],
+  "Selasa": [],
   "Rabu": [
     {
       "title": "Youkoso Jitsuryoku Shijou Shugi no Kyoushitsu e 4th Season: 2-nensei-hen 1 Gakki",
@@ -100,41 +95,101 @@
   ],
   "Sabtu": [
     {
+      "title": "Honzuki no Gekokujou: Shisho ni Naru Tame ni wa Shudan wo Erandeiraremasen – Ryoushu no Youjo",
+      "time": "16:51 WIB",
+      "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2026/04/Honzuki-no-Gekokujou-Shisho-ni-Naru-Tame-ni-wa-Shudan-wo-Erandeiraremasen-Ryoushu-no-Youjo.jpg"
+    },
+    {
+      "title": "Mairimashita! Iruma-kun 4th Season",
+      "time": "18:05 WIB",
+      "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2026/04/Mairimashita-Iruma-kun-4th-Season.jpg"
+    },
+    {
       "title": "Detective Conan",
-      "time": "18:39 WIB",
+      "time": "18:14 WIB",
       "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2022/09/Detective-Conan.jpg"
     },
     {
-      "title": "Jingai Kyoushitsu no Ningengirai Kyoushi",
-      "time": "23:11 WIB",
-      "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2026/01/Jingai-Kyoushitsu-no-Ningengirai-Kyoushi.jpg"
+      "title": "Saikyou no Shokugyou wa Yuusha demo Kenja demo Naku Kanteishi (Kari) Rashii desu yo?",
+      "time": "20:51 WIB",
+      "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2026/03/Saikyou-no-Shokugyou-wa-Yuusha-demo-Kenja-demo-Naku-Kanteishi-Kari-Rashii-desu-yo.jpg"
+    },
+    {
+      "title": "Akane-banashi",
+      "time": "22:44 WIB",
+      "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2026/04/Akane-banashi.jpg"
+    },
+    {
+      "title": "Mao",
+      "time": "22:57 WIB",
+      "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2026/04/Mao.jpg"
+    },
+    {
+      "title": "Yomi no Tsugai",
+      "time": "23:15 WIB",
+      "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2026/04/Yomi-no-Tsugai.jpg"
+    },
+    {
+      "title": "Kanan-sama wa Akumade Choroi",
+      "time": "23:19 WIB",
+      "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2026/04/Kanan-sama-wa-Akumade-Choroi.jpg"
+    },
+    {
+      "title": "Shunkashuutou Daikousha: Haru no Mai",
+      "time": "23:39 WIB",
+      "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2026/03/Shunkashuutou-Daikousha-Haru-no-Mai.jpg"
+    },
+    {
+      "title": "Kami no Niwatsuki Kusunoki-tei",
+      "time": "23:44 WIB",
+      "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2026/04/Kami-no-Niwatsuki-Kusunoki-tei.jpg"
     }
   ],
   "Minggu": [
     {
-      "title": "Shunkashuutou Daikousha: Haru no Mai",
-      "time": "00:17 WIB",
-      "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2026/03/Shunkashuutou-Daikousha-Haru-no-Mai.jpg"
-    },
-    {
-      "title": "Yuusha no Kuzu",
-      "time": "00:34 WIB",
-      "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2026/01/Yuusha-no-Kuzu.jpg"
+      "title": "Needy Girl Overdose",
+      "time": "00:25 WIB",
+      "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2026/04/Needy-Girl-Overdose.jpg"
     },
     {
       "title": "Digimon Beatbreak",
-      "time": "12:02 WIB",
+      "time": "11:16 WIB",
       "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2025/10/Digimon-Beatbreak.jpg"
     },
     {
       "title": "Niwatori Fighter",
-      "time": "15:09 WIB",
+      "time": "15:51 WIB",
       "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2026/03/Niwatori-Fighter.jpg"
+    },
+    {
+      "title": "Diamond no Ace: Act II Second Season",
+      "time": "16:29 WIB",
+      "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2026/04/Diamond-no-Ace-Act-II-Second-Season.jpg"
+    },
+    {
+      "title": "Nippon Sangoku",
+      "time": "20:02 WIB",
+      "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2026/04/Nippon-Sangoku.jpg"
+    },
+    {
+      "title": "Maid-san wa Taberu dake",
+      "time": "21:28 WIB",
+      "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2026/03/Maid-san-wa-Taberu-dake.jpg"
     },
     {
       "title": "Isekai de Cheat Skill wo Te ni Shita Ore wa, Genjitsu Sekai wo mo Musou Suru: Level Up wa Jinsei wo Kaeta 2nd Season",
       "time": "22:21 WIB",
       "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2026/03/Isekai-de-Cheat-Skill-wo-Te-ni-Shita-Ore-wa-Genjitsu-Sekai-wo-mo-Musou-Suru-Level-Up-wa-Jinsei-wo-Kaeta-2nd-Season.jpg"
+    },
+    {
+      "title": "Ghost Concert: Missing Songs",
+      "time": "22:55 WIB",
+      "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2026/04/Ghost-Concert-Missing-Songs.jpg"
+    },
+    {
+      "title": "One Piece",
+      "time": "23:09 WIB",
+      "cover_url": "https://i0.wp.com/s12.nontonanimeid.boats/wp-content/uploads/2025/04/One-Piece.jpg"
     }
   ]
 }

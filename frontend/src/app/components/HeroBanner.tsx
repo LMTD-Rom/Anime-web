@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
+import CoverImage from "./CoverImage";
 import Link from "next/link";
 
 interface HeroAnime {
@@ -75,24 +75,20 @@ export default function HeroBanner({ slides }: { slides: HeroAnime[] }) {
                 onMouseLeave={() => setIsPlaying(true)}
             >
                 {/* Background image */}
-                {slide.cover_url && (
-                    <Image
-                        key={slide.slug}
-                        src={slide.cover_url}
-                        alt={slide.title}
-                        fill
-                        style={{
-                            objectFit: "cover",
-                            objectPosition: "center top",
-                            filter: "blur(3px) brightness(0.35)",
-                            transform: "scale(1.08)",
-                            transition: "opacity 0.5s ease",
-                            opacity: transitioning ? 0 : 1,
-                        }}
-                        unoptimized
-                        priority
-                    />
-                )}
+                <CoverImage
+                    key={slide.slug}
+                    src={slide.cover_url}
+                    alt={slide.title}
+                    priority
+                    style={{
+                        objectFit: "cover",
+                        objectPosition: "center top",
+                        filter: "blur(3px) brightness(0.35)",
+                        transform: "scale(1.08)",
+                        transition: "opacity 0.5s ease",
+                        opacity: transitioning ? 0 : 1,
+                    }}
+                />
 
                 {/* Gradient overlays */}
                 <div style={{
@@ -115,9 +111,7 @@ export default function HeroBanner({ slides }: { slides: HeroAnime[] }) {
                     <div className="hero-content-flex">
                         {/* Poster */}
                         <div className="hero-poster">
-                            {slide.cover_url && (
-                                <Image src={slide.cover_url} alt={slide.title} fill style={{ objectFit: "cover" }} unoptimized />
-                            )}
+                            <CoverImage src={slide.cover_url} alt={slide.title} />
                         </div>
                         {/* Text */}
                         <div className="hero-text-box">

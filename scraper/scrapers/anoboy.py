@@ -288,11 +288,23 @@ def scrape_anime_detail(url, schedule_map, ongoing_slugs=None):
 
     # Description
     desc = None
-    for tag in soup.find_all(['p', 'div']):
-        t = tag.get_text(strip=True)
-        if len(t) > 100 and not any(k in t.lower() for k in ['copyright','cookie','home','episode','genre']):
-            desc = t[:500]
+    # Anoboy often puts description in a paragraph that doesn't contain metadata keywords
+    for p in soup.find_all('p'):
+        t = p.get_text(strip=True)
+        # Skip if it's too short or contains common metadata labels
+        if len(t) > 80 and not any(k in t.lower() for k in ['judul:', 'genre:', 'sinopsis:', 'episode:', 'status:', 'rating:', 'copyright']):
+            desc = t[:800]
             break
+    
+    # Fallback: if no good paragraph found, try divs but with stricter content filtering
+    if not desc:
+        for tag in soup.find_all('div'):
+            t = tag.get_text(strip=True)
+            if 100 < len(t) < 2000 and not any(k in t.lower() for k in ['copyright','cookie','home','episode','genre','video']):
+                # Stricter check: description should not start with title
+                if not t.lower().startswith(title.lower()[:10]):
+                    desc = t[:800]
+                    break
     
     # All episodes
     episodes = []

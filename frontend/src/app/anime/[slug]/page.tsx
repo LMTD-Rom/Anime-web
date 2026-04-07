@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import CoverImage from "@/app/components/CoverImage";
 import EpisodeCard from "@/app/components/EpisodeCard";
 import WatchlistButton from "@/app/components/WatchlistButton";
 import AnimeCard from "@/app/components/AnimeCard";
@@ -84,15 +85,15 @@ export default async function AnimePage({ params }: { params: Promise<{ slug: st
         <div style={{ minHeight: "100vh" }}>
             {/* ═══ HERO BACKDROP ═══ */}
             <div style={{ position: "relative", width: "100%", height: "320px", overflow: "hidden" }}>
-                {anime.cover_url && (
-                    <Image
+                {anime.cover_url ? (
+                    <CoverImage
                         src={anime.cover_url}
                         alt={anime.title}
-                        fill
-                        style={{ objectFit: "cover", objectPosition: "center top", filter: "blur(8px) brightness(0.3)", transform: "scale(1.1)" }}
-                        unoptimized
                         priority
+                        style={{ objectFit: "cover", objectPosition: "center top", filter: "blur(8px) brightness(0.3)", transform: "scale(1.1)" }}
                     />
+                ) : (
+                    <div style={{ width: "100%", height: "100%", background: "var(--surface2)" }} />
                 )}
                 <div style={{
                     position: "absolute", bottom: 0, left: 0, right: 0, height: "100%",
@@ -111,11 +112,7 @@ export default async function AnimePage({ params }: { params: Promise<{ slug: st
                         borderRadius: "12px", overflow: "hidden", position: "relative",
                         boxShadow: "0 16px 48px rgba(0,0,0,0.6)"
                     }}>
-                        {anime.cover_url ? (
-                            <Image src={anime.cover_url} alt={anime.title} fill style={{ objectFit: "cover" }} unoptimized />
-                        ) : (
-                            <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-dim)", fontSize: "3rem" }}>🎬</div>
-                        )}
+                        <CoverImage src={anime.cover_url} alt={anime.title} />
                     </div>
 
                     {/* Meta */}

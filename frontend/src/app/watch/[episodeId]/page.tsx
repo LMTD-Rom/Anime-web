@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState, useCallback } from "react";
+import { use, useEffect, useState, useCallback, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import SaweriaSupport from "../../components/SaweriaSupport";
 
@@ -38,6 +38,7 @@ export default function WatchPage({ params }: { params: Promise<{ episodeId: str
     const [activeIdx, setActiveIdx] = useState(0);
     const [loading, setLoading] = useState(true);
     const [iframeError, setIframeError] = useState(false);
+    const iframeRef = useRef<HTMLIFrameElement>(null);
 
     const activeSource = sources[activeIdx] ?? null;
 
@@ -111,6 +112,29 @@ export default function WatchPage({ params }: { params: Promise<{ episodeId: str
         load();
     }, [episodeId]);
 
+    // Keyboard Shortcuts (Space to Pause QoL)
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Only handle Space key
+            if (e.code === "Space") {
+                // If user is typing in an input/textarea, don't interfere
+                const tag = document.activeElement?.tagName.toLowerCase();
+                if (tag === "input" || tag === "textarea") return;
+
+                // Stop the page from scrolling
+                e.preventDefault();
+
+                // If iframe exists, focus it so internal player can catch the next space press
+                if (iframeRef.current) {
+                    iframeRef.current.focus();
+                }
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, []);
+
     if (loading) {
         return (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "60vh" }}>
@@ -159,6 +183,7 @@ export default function WatchPage({ params }: { params: Promise<{ episodeId: str
             }}>
                 {activeSource && !iframeError ? (
                     <iframe
+                        ref={iframeRef}
                         key={activeSource.id}
                         src={activeSource.video_url}
                         title={`${anime?.title} Episode ${episode.episode_no}`}

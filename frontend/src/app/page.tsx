@@ -1,8 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import Image from "next/image";
 import AnimeCard from "@/app/components/AnimeCard";
 import HeroBanner from "@/app/components/HeroBanner";
+import CoverImage from "@/app/components/CoverImage";
 import ContinueWatching from "@/app/components/ContinueWatching";
 import SaweriaMilestone from "@/app/components/SaweriaMilestone";
 import { Suspense } from "react";
@@ -106,11 +106,7 @@ export default async function HomePage() {
                       borderRadius: "6px", overflow: "hidden", flexShrink: 0,
                       border: "1px solid var(--border)"
                     }}>
-                      {anime.cover_url ? (
-                        <Image src={anime.cover_url} alt={anime.title} fill style={{ objectFit: "cover" }} className="group-hover:scale-110 transition-transform duration-300" unoptimized />
-                      ) : (
-                        <div style={{ width: "100%", height: "100%", background: "var(--surface2)" }} />
-                      )}
+                      <CoverImage src={anime.cover_url} alt={anime.title} className="group-hover:scale-110 transition-transform duration-300" />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <h4 style={{

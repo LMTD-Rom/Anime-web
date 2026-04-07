@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import CoverImage from "./CoverImage";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
@@ -139,11 +140,7 @@ export default function ContinueWatching() {
                                 background: "var(--surface2)", border: "1px solid var(--border)",
                                 marginBottom: "0.4rem",
                             }}>
-                                {entry.coverUrl ? (
-                                    <Image src={entry.coverUrl} alt={entry.animeTitle} fill style={{ objectFit: "cover" }} unoptimized />
-                                ) : (
-                                    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-dim)", fontSize: "2rem" }}>🎬</div>
-                                )}
+                                <CoverImage src={entry.coverUrl} alt={entry.animeTitle} />
                                 <div style={{
                                     position: "absolute", inset: 0,
                                     background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 50%)",

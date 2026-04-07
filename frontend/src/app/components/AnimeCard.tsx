@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import CoverImage from "./CoverImage";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function AnimeCard({ anime }: { anime: any }) {
@@ -26,21 +26,12 @@ export default function AnimeCard({ anime }: { anime: any }) {
             }}>
                 {/* Cover */}
                 <div style={{ position: "relative", aspectRatio: "2/3", width: "100%", background: "#0f0f1f", overflow: "hidden" }}>
-                    {anime.cover_url ? (
-                        <Image
-                            src={anime.cover_url}
-                            alt={anime.title}
-                            fill
-                            style={{ objectFit: "cover" }}
-                            className="anime-card-img"
-                            unoptimized
-                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                        />
-                    ) : (
-                        <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <span style={{ color: "var(--text-dim)", fontSize: "2rem" }}>?</span>
-                        </div>
-                    )}
+                    <CoverImage
+                        src={anime.cover_url}
+                        alt={anime.title}
+                        className="anime-card-img"
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                    />
 
                     {/* Play Button Overlay (Hover) */}
                     <div className="play-overlay">
