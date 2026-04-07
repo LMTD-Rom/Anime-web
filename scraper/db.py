@@ -63,15 +63,12 @@ def sync_all(results):
         return {}
 
     import datetime
-    # Step 1: Batch upsert all animes. Only rely on existing updated_at or what the scraper passed.
+    # Step 1: Batch upsert all animes.
     anime_payloads = []
     
-    # Generate explicit descending timestamps if not present, so the very last item in 'results' 
-    # (which came from reversing in main.py) gets the LATEST timestamp.
     now = datetime.datetime.now(datetime.timezone.utc)
     for i, item in enumerate(results):
         payload = item['anime'].copy()
-        # Add 1 second per index so the last item is technically the most recent
         payload['updated_at'] = (now + datetime.timedelta(seconds=i)).isoformat()
         anime_payloads.append(payload)
 
@@ -84,7 +81,7 @@ def sync_all(results):
     upserted_animes = res.json()
     slug_to_id = {a['slug']: a['id'] for a in upserted_animes if 'slug' in a and 'id' in a}
 
-    # Step 1.5: Query existing episodes to avoid re-scraping videos for episodes we already have
+    # Step 1.5: Query existing episodes
     all_anime_ids = list(set([a for a in slug_to_id.values() if a]))
     existing_eps_map = {}
     if all_anime_ids:
@@ -96,9 +93,9 @@ def sync_all(results):
                 if aid not in existing_eps_map: existing_eps_map[aid] = set()
                 existing_eps_map[aid].add(row['episode_no'])
 
-    # Step 2: Collect all episodes with their source_url
+    # Step 2: Collect all episodes
     all_episodes = []
-    ep_source_map = {}  # index_in_all_episodes -> source_url
+    ep_source_map = {}
     for item in results:
         slug = item['anime']['slug']
         anime_id = slug_to_id.get(slug)
@@ -115,13 +112,12 @@ def sync_all(results):
                     "episode_no": ep['episode_no'],
                     "title": ep['title'],
                 })
-                # Only map source URL if it's a NEW episode that needs video scraping
                 if not is_existing:
                     ep_source_map[idx] = ep.get('source_url')
 
-    # Step 3: Batch upsert episodes, get back IDs
+    # Step 3: Batch upsert episodes
     CHUNK = 500
-    episode_id_source = {}  # episode_id -> source_url
+    episode_id_source = {}
     for i in range(0, len(all_episodes), CHUNK):
         chunk = all_episodes[i:i+CHUNK]
         ep_res = sb_post("episodes?on_conflict=anime_id,episode_no", chunk, prefer="return=representation", resolution="merge-duplicates")
@@ -139,10 +135,7 @@ def sync_all(results):
 
 
 def upsert_video_sources(episode_id, sources):
-    """
-    Insert multiple video_sources for an episode.
-    sources: list of {provider_name, video_url, quality, is_embed}
-    """
+    """Insert multiple video_sources for an episode."""
     if not sources:
         return
     payloads = [
@@ -159,7 +152,6 @@ def upsert_video_sources(episode_id, sources):
     if not payloads:
         return
         
-    # Clear old sources to simulate UPSERT (since there's no unique constraint on video_sources)
     try:
         requests.delete(f"{SUPABASE_URL}/rest/v1/video_sources?episode_id=eq.{episode_id}", headers=HEADERS)
     except:
