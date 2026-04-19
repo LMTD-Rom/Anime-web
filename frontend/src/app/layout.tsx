@@ -3,6 +3,7 @@ import "./globals.css";
 import Link from "next/link";
 import NavClient from "./components/NavClient";
 import GuestNotif from "./components/GuestNotif";
+import SystemNotif from "./components/SystemNotif";
 import SaweriaFloat from "./components/SaweriaFloat";
 import Script from "next/script";
 
@@ -56,6 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* Guest notification toast */}
         <GuestNotif />
+        <SystemNotif />
 
         {/* Page content (offset for fixed nav) */}
         <div className="page-content">

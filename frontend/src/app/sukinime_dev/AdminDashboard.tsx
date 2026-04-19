@@ -20,9 +20,12 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
     const [scraping, setScraping] = useState(false);
     const [message, setMessage] = useState("");
     const [maintenance, setMaintenance] = useState(false);
+    const [systemNotifMessage, setSystemNotifMessage] = useState("");
+    const [systemNotifLoading, setSystemNotifLoading] = useState(false);
 
     // Modal Edit State
     const [editingAnime, setEditingAnime] = useState<any>(null);
+    const [isToolsSidebarOpen, setIsToolsSidebarOpen] = useState(false);
 
     const supabase = createClient();
 
@@ -94,6 +97,28 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
         if (!error) setMaintenance(newValue);
     };
 
+    const handleSetSystemNotif = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!systemNotifMessage.trim()) return;
+        setSystemNotifLoading(true);
+        const payload = {
+            message: systemNotifMessage,
+            id: Date.now().toString(),
+            expires_at: Date.now() + 24 * 60 * 60 * 1000
+        };
+        const { error } = await supabase.from("site_settings").upsert({ 
+            key: "system_notification", 
+            value: JSON.stringify(payload) 
+        });
+        if (!error) {
+            alert("System Notification Set for 24 hours!");
+            setSystemNotifMessage("");
+        } else {
+            alert("Gagal set notif: " + error.message);
+        }
+        setSystemNotifLoading(false);
+    };
+
     const handleUpdateAnime = async (e: React.FormEvent) => {
         e.preventDefault();
         const { error } = await supabase.from("animes").update({
@@ -120,11 +145,11 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
     };
 
     return (
-        <div style={{ minHeight: "100vh", background: "var(--bg)", color: "var(--text)", padding: "2rem" }}>
-            <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
+        <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] p-4 sm:p-8 overflow-x-hidden">
+            <div style={{ maxWidth: "1280px", margin: "0 auto", width: "100%" }}>
 
                 {/* Header */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3rem" }}>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 md:mb-12">
                     <div>
                         <h1 style={{ fontSize: "1.8rem", fontWeight: 900, margin: 0, letterSpacing: "-0.02em" }}>Dev Dashboard <span style={{ color: "var(--accent)" }}>V2</span></h1>
                         <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginTop: "4px" }}>Control Center — {user.email}</p>
@@ -152,7 +177,7 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
                 </div>
 
                 {/* Tab Navigation */}
-                <div style={{ display: "flex", gap: "12px", marginBottom: "2rem", borderBottom: "1px solid var(--border)", paddingBottom: "1rem" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginBottom: "2rem", borderBottom: "1px solid var(--border)", paddingBottom: "1rem" }}>
                     {([
                         { id: "overview", label: "Overview", icon: "📊" },
                         { id: "users", label: "User Management", icon: "👤" }
@@ -190,7 +215,18 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
                             ))}
                         </div>
 
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 400px", gap: "2rem" }}>
+                        {/* Mobile Sidebar Toggle */}
+                        <div className="flex lg:hidden justify-between items-center mb-6 bg-[var(--surface)] border border-[var(--border)] rounded-[20px] p-4">
+                            <div>
+                                <h3 style={{ margin: 0, fontSize: "1rem", fontWeight: 800 }}>Admin Tools</h3>
+                                <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--text-muted)" }}>Scraper & Link Checker</p>
+                            </div>
+                            <button onClick={() => setIsToolsSidebarOpen(true)} style={{ background: "var(--accent)", color: "#fff", border: "none", borderRadius: "10px", padding: "0.6rem 1rem", fontWeight: 800, cursor: "pointer", fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "6px", whiteSpace: "nowrap" }}>
+                                🛠️ Open Tools
+                            </button>
+                        </div>
+
+                        <div className="flex flex-col lg:grid lg:grid-cols-[1fr_400px] gap-8">
                             <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
                                 {/* Queue Monitor */}
                                 <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "24px", padding: "1.5rem" }}>
@@ -247,33 +283,56 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
                                 </div>
                             </div>
 
-                            <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-                                {/* Manual Scraper */}
-                                <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "24px", padding: "1.5rem" }}>
-                                    <h3 style={{ margin: "0 0 1.5rem", fontSize: "1rem", fontWeight: 800 }}>Request Scrape Manual</h3>
-                                    <form onSubmit={handleScrape} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                                        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                                            <label style={{ fontSize: "0.7rem", color: "var(--text-muted)", fontWeight: 800 }}>JUDUL</label>
-                                            <input type="text" required value={scrapeTitle} onChange={e => setScrapeTitle(e.target.value)} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", borderRadius: "10px", padding: "0.85rem", color: "#fff" }} placeholder="Contoh: Demon Slayer S3" />
-                                        </div>
-                                        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                                            <label style={{ fontSize: "0.7rem", color: "var(--text-muted)", fontWeight: 800 }}>URL ANOBOY</label>
-                                            <input type="url" required value={scrapeUrl} onChange={e => setScrapeUrl(e.target.value)} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", borderRadius: "10px", padding: "0.85rem", color: "#fff" }} placeholder="https://anoboy7.com/anime/..." />
-                                        </div>
-                                        {message && <div style={{ padding: "10px", borderRadius: "8px", background: message.startsWith("Gagal") ? "rgba(230,57,80,0.1)" : "rgba(16,185,129,0.1)", color: message.startsWith("Gagal") ? "var(--accent)" : "#10b981", fontSize: "0.8rem" }}>{message}</div>}
-                                        <button type="submit" disabled={scraping} style={{ background: "var(--accent)", color: "#fff", border: "none", borderRadius: "10px", padding: "1rem", fontWeight: 800, cursor: scraping ? "not-allowed" : "pointer" }}>{scraping ? "Processing..." : "Submit Task"}</button>
-                                    </form>
+                            {/* Mobile Overlay */}
+                            {isToolsSidebarOpen && (
+                                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden" onClick={() => setIsToolsSidebarOpen(false)} />
+                            )}
+
+                            {/* Right Column / Sidebar */}
+                            <div className={`fixed inset-y-0 right-0 z-50 w-[85vw] max-w-[360px] bg-[var(--surface)] p-6 overflow-y-auto transform transition-transform duration-300 lg:relative lg:transform-none lg:w-auto lg:p-0 lg:bg-transparent lg:z-auto ${isToolsSidebarOpen ? "translate-x-0 border-l border-[var(--border)] shadow-2xl" : "translate-x-full lg:translate-x-0"}`}>
+                                <div className="flex justify-between items-center mb-6 lg:hidden">
+                                    <h2 style={{ margin: 0, fontSize: "1.2rem", fontWeight: 900 }}>Admin Tools</h2>
+                                    <button onClick={() => setIsToolsSidebarOpen(false)} style={{ background: "none", border: "none", color: "var(--text-muted)", fontSize: "1.8rem", cursor: "pointer", lineHeight: 1 }}>&times;</button>
                                 </div>
-                                {/* Broken Link Status */}
-                                <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "24px", padding: "1.5rem" }}>
-                                    <h3 style={{ margin: "0 0 1rem", fontSize: "1rem", fontWeight: 800 }}>Broken Link Status</h3>
-                                    <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "1rem" }}>
-                                        <div style={{ flex: 1, height: "8px", background: "#333", borderRadius: "4px", overflow: "hidden" }}>
-                                            <div style={{ width: `${(stats.broken / (stats.episodes || 1)) * 100}%`, height: "100%", background: "var(--accent)" }} />
-                                        </div>
-                                        <span style={{ fontSize: "0.8rem", fontWeight: 700 }}>{stats.broken} issues</span>
+                                <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+                                    {/* Manual Scraper */}
+                                    <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "24px", padding: "1.5rem" }}>
+                                        <h3 style={{ margin: "0 0 1.5rem", fontSize: "1rem", fontWeight: 800 }}>Request Scrape Manual</h3>
+                                        <form onSubmit={handleScrape} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                                            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                                                <label style={{ fontSize: "0.7rem", color: "var(--text-muted)", fontWeight: 800 }}>JUDUL</label>
+                                                <input type="text" required value={scrapeTitle} onChange={e => setScrapeTitle(e.target.value)} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", borderRadius: "10px", padding: "0.85rem", color: "#fff" }} placeholder="Contoh: Demon Slayer S3" />
+                                            </div>
+                                            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                                                <label style={{ fontSize: "0.7rem", color: "var(--text-muted)", fontWeight: 800 }}>URL ANOBOY</label>
+                                                <input type="url" required value={scrapeUrl} onChange={e => setScrapeUrl(e.target.value)} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", borderRadius: "10px", padding: "0.85rem", color: "#fff" }} placeholder="https://anoboy7.com/anime/..." />
+                                            </div>
+                                            {message && <div style={{ padding: "10px", borderRadius: "8px", background: message.startsWith("Gagal") ? "rgba(230,57,80,0.1)" : "rgba(16,185,129,0.1)", color: message.startsWith("Gagal") ? "var(--accent)" : "#10b981", fontSize: "0.8rem" }}>{message}</div>}
+                                            <button type="submit" disabled={scraping} style={{ background: "var(--accent)", color: "#fff", border: "none", borderRadius: "10px", padding: "1rem", fontWeight: 800, cursor: scraping ? "not-allowed" : "pointer" }}>{scraping ? "Processing..." : "Submit Task"}</button>
+                                        </form>
                                     </div>
-                                    <button style={{ width: "100%", padding: "0.85rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", color: "#fff", borderRadius: "10px", fontSize: "0.85rem", cursor: "pointer" }}>Run Deep Scanner</button>
+                                    {/* System Notification Setup */}
+                                    <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "24px", padding: "1.5rem" }}>
+                                        <h3 style={{ margin: "0 0 1.5rem", fontSize: "1rem", fontWeight: 800 }}>Global Pop Up Pesan</h3>
+                                        <form onSubmit={handleSetSystemNotif} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                                            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                                                <label style={{ fontSize: "0.7rem", color: "var(--text-muted)", fontWeight: 800 }}>PESAN (Tampil 24 Jam)</label>
+                                                <textarea required value={systemNotifMessage} onChange={e => setSystemNotifMessage(e.target.value)} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", borderRadius: "10px", padding: "0.85rem", color: "#fff", resize: "vertical", minHeight: "80px" }} placeholder="Misal: Ada perbaikan server bentar bang..." />
+                                            </div>
+                                            <button type="submit" disabled={systemNotifLoading} style={{ background: "var(--accent)", color: "#fff", border: "none", borderRadius: "10px", padding: "1rem", fontWeight: 800, cursor: systemNotifLoading ? "not-allowed" : "pointer" }}>{systemNotifLoading ? "Processing..." : "Set Notif"}</button>
+                                        </form>
+                                    </div>
+                                    {/* Broken Link Status */}
+                                    <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "24px", padding: "1.5rem" }}>
+                                        <h3 style={{ margin: "0 0 1rem", fontSize: "1rem", fontWeight: 800 }}>Broken Link Status</h3>
+                                        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "1rem" }}>
+                                            <div style={{ flex: 1, height: "8px", background: "#333", borderRadius: "4px", overflow: "hidden" }}>
+                                                <div style={{ width: `${(stats.broken / (stats.episodes || 1)) * 100}%`, height: "100%", background: "var(--accent)" }} />
+                                            </div>
+                                            <span style={{ fontSize: "0.8rem", fontWeight: 700 }}>{stats.broken} issues</span>
+                                        </div>
+                                        <button style={{ width: "100%", padding: "0.85rem", background: "rgba(255,255,255,0.05)", border: "1px solid var(--border)", color: "#fff", borderRadius: "10px", fontSize: "0.85rem", cursor: "pointer" }}>Run Deep Scanner</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
