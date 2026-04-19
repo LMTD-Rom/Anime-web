@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import PlaceholderCover from "./PlaceholderCover";
 
@@ -22,10 +22,14 @@ export default function CoverImage({
     style,
     className,
     priority = false,
-    unoptimized = true,
+    unoptimized = false,
     sizes
 }: CoverImageProps) {
     const [error, setError] = useState(false);
+
+    useEffect(() => {
+        setError(false);
+    }, [src]);
 
     if (!src || error) {
         return <PlaceholderCover />;
