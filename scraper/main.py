@@ -1,15 +1,6 @@
 #!/usr/bin/env python3
 """
-Sukinime Dual-Source Scraper
-==========================
-Primary:   Samehadaku.li  — metadata, episodes, video sources, schedule
-Secondary: Anoboy7.com    — alternative cover if Samehadaku cover missing,
-                            extra video source mirrors per episode
 
-Usage:
-  python main.py               # Scrape ALL anime from Samehadaku
-  python main.py --limit 20    # Test with first 20 titles
-  python main.py --source anoboy  # Scrape from Anoboy only (legacy)
 """
 import sys
 import time
@@ -101,8 +92,6 @@ def run_anoboy(limit=None):
                 print(f"  ERROR: {e}")
             time.sleep(0.3)
 
-        # Sync all collected data in REVERSE order (oldest first, newest last)
-        # This ensures the newest items (processed last) get the latest timestamps in DB.
         if all_data:
             to_sync = list(reversed(all_data))
             print(f"\n  -> Syncing {len(to_sync)} anime to DB in chronological order...")

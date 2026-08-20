@@ -14,7 +14,6 @@ export default function SukinimeDevPage() {
         const checkUser = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
-                // Fetch profile to check admin status
                 const { data: profile } = await supabase
                     .from("profiles")
                     .select("is_admin")

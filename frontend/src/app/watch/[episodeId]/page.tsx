@@ -20,8 +20,12 @@ interface Episode {
     animes?: { title: string; slug: string; cover_url?: string };
 }
 
-function qualityLabel(quality: string): string {
-    if (!quality || quality === "auto") return "All Res";
+function qualityLabel(quality: string, providerName?: string): string {
+    if (!quality || quality === "auto") {
+        const name = (providerName || "").toUpperCase();
+        if (name === "CEPAT") return "All Res";
+        return "Low Res";
+    }
     const q = quality.toLowerCase();
     if (q.includes("1080")) return "1080p";
     if (q.includes("720")) return "720p";
@@ -226,7 +230,7 @@ export default function WatchPage({ params }: { params: Promise<{ episodeId: str
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
                         {sources.map((src, i) => {
                             const isActive = i === activeIdx;
-                            const qlabel = qualityLabel(src.quality);
+                            const qlabel = qualityLabel(src.quality, src.provider_name);
                             return (
                                 <button
                                     key={src.id}
