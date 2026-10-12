@@ -3,7 +3,7 @@
   # Sukinime
 
   <p align="center">
-    <strong>Streaming anime subtitle Indonesia — nonton terbaru, terpopuler, dan terlengkap.</strong>
+    <strong>Streaming anime subtitle Indonesia - nonton terbaru, terpopuler, dan terlengkap.</strong>
   </p>
 
   <p align="center">
